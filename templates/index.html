@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - AI Customer Helpdesk{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <!-- Hero -->
+    <div class="row mt-3 mb-5">
+        <div class="col-lg-7 mx-auto text-center" style="padding: 3rem 0 1rem;">
+            <div style="display:inline-flex; align-items:center; gap:0.5rem; background:rgba(14,165,160,0.12); border:1px solid rgba(14,165,160,0.3); border-radius:20px; padding:0.35rem 1rem; font-size:0.78rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--teal); margin-bottom:1.5rem;">
+                <span style="width:6px;height:6px;background:var(--teal);border-radius:50%;"></span>
+                AI-Powered Support
+            </div>
+            <h1 class="section-title" style="font-size:clamp(2.2rem,5vw,3.4rem); line-height:1.15; margin-bottom:1.2rem;">
+                Support that works<br><em style="color:var(--teal); font-style:italic;">as fast as you need</em>
+            </h1>
+            <p style="color:var(--text-muted); font-size:1.05rem; line-height:1.7; max-width:520px; margin:0 auto 2.2rem;">
+                Submit a ticket and our AI-powered system instantly analyzes your inquiry — detecting sentiment, assigning priority, and routing it to the right team.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="/submit" class="btn-teal" style="font-size:1rem; padding:0.8rem 2rem;">Submit a Ticket &nbsp;→</a>
+                <a href="#features" class="btn-ghost" style="font-size:1rem; padding:0.8rem 2rem;">Learn More</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <section id="features" style="padding:3rem 0;">
+        <div class="text-center mb-4">
+            <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); margin-bottom:0.5rem;">Features</p>
+            <h2 class="section-title" style="font-size:2rem;">Why teams choose HelpdeskAI</h2>
+        </div>
+
+        <div class="row g-4 mt-2">
+            <div class="col-md-4">
+                <div class="card-hd h-100" style="padding:2rem; text-align:center;">
+                    <div style="width:52px;height:52px;background:rgba(245,158,11,0.15);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:1.4rem;">⚡</div>
+                    <h3 style="font-size:1.05rem; font-weight:700; color:var(--text-main); margin-bottom:0.6rem;">Instant Processing</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.65;">Tickets are analyzed the moment they're submitted — no queues, no manual triage delays.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-hd h-100" style="padding:2rem; text-align:center; border-color:rgba(14,165,160,0.25);">
+                    <div style="width:52px;height:52px;background:rgba(14,165,160,0.15);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:1.4rem;">🧠</div>
+                    <h3 style="font-size:1.05rem; font-weight:700; color:var(--text-main); margin-bottom:0.6rem;">Smart Prioritization</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.65;">Urgent issues are automatically flagged using sentiment analysis so critical problems never get buried.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-hd h-100" style="padding:2rem; text-align:center;">
+                    <div style="width:52px;height:52px;background:rgba(16,185,129,0.15);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:1.4rem;">📡</div>
+                    <h3 style="font-size:1.05rem; font-weight:700; color:var(--text-main); margin-bottom:0.6rem;">Full Transparency</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.65;">Every ticket gets a tracking ID, status updates, and email confirmation so customers are never in the dark.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section style="padding: 3rem 0 1rem;">
+        <div class="card-hd" style="padding:2.5rem; background:linear-gradient(135deg, rgba(14,165,160,0.07), rgba(13,27,42,0.4));">
+            <div class="row text-center g-4">
+                <div class="col-6 col-md-3">
+                    <div class="section-title" style="font-size:2.4rem; color:var(--teal-light);">500+</div>
+                    <div style="font-size:0.83rem; color:var(--text-muted); margin-top:0.3rem;">Tickets Resolved</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="section-title" style="font-size:2.4rem; color:#6ee7b7;">98%</div>
+                    <div style="font-size:0.83rem; color:var(--text-muted); margin-top:0.3rem;">Customer Satisfaction</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="section-title" style="font-size:2.4rem; color:#fde68a;">24/7</div>
+                    <div style="font-size:0.83rem; color:var(--text-muted); margin-top:0.3rem;">Support Available</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="section-title" style="font-size:2.4rem; color:#fca5a5;">~2h</div>
+                    <div style="font-size:0.83rem; color:var(--text-muted); margin-top:0.3rem;">Avg. Response Time</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

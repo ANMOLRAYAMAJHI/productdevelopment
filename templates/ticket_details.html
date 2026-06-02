@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Ticket #{{ ticket.id }} - AI Customer Helpdesk{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:1.5rem;">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <!-- Breadcrumb / Back -->
+            <div class="mb-4">
+                <a href="/dashboard" class="btn-ghost" style="font-size:0.85rem; padding:0.4rem 1rem;">← Back to Dashboard</a>
+            </div>
+
+            <!-- Ticket Header -->
+            <div class="card-hd mb-4">
+                <div class="card-header-hd">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div>
+                            <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--teal); margin-bottom:0.3rem;">Support Ticket</p>
+                            <h2 class="section-title" style="font-size:1.7rem; margin:0;">Ticket #{{ ticket.id }}</h2>
+                        </div>
+                        <a href="/update-status/{{ ticket.id }}" class="btn-amber" style="font-size:0.88rem;">Change Status</a>
+                    </div>
+                </div>
+                <div class="card-body-hd">
+                    <div class="row g-4">
+                        <div class="col-sm-6 col-lg-3">
+                            <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem;">Status</div>
+                            {% if ticket.status == 'Open' %}
+                                <span class="badge-hd badge-open">Open</span>
+                            {% elif ticket.status == 'In Progress' %}
+                                <span class="badge-hd badge-progress">In Progress</span>
+                            {% else %}
+                                <span class="badge-hd badge-closed">Closed</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem;">Priority</div>
+                            {% if ticket.priority == 'Urgent' %}
+                                <span class="badge-hd badge-urgent">Urgent</span>
+                            {% else %}
+                                <span class="badge-hd badge-normal">Normal</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem;">Created</div>
+                            <div style="font-size:0.88rem;">{{ ticket.created_date.strftime('%b %d, %Y') }}</div>
+                            <div style="font-size:0.78rem; color:var(--text-muted);">{{ ticket.created_date.strftime('%I:%M %p') }}</div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem;">Last Updated</div>
+                            <div style="font-size:0.88rem;">{{ ticket.updated_date.strftime('%b %d, %Y') }}</div>
+                            <div style="font-size:0.78rem; color:var(--text-muted);">{{ ticket.updated_date.strftime('%I:%M %p') }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two-column layout -->
+            <div class="row g-4">
+
+                <!-- Left: Customer + Message -->
+                <div class="col-lg-7">
+
+                    <!-- Customer Info -->
+                    <div class="card-hd mb-4">
+                        <div class="card-header-hd">
+                            <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin:0;">Customer Information</p>
+                        </div>
+                        <div class="card-body-hd">
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.3rem;">Name</div>
+                                    <div style="font-weight:600;">{{ ticket.customer_name }}</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.3rem;">Email</div>
+                                    <a href="mailto:{{ ticket.email }}" style="color:var(--teal); font-size:0.9rem; text-decoration:none;">{{ ticket.email }}</a>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.3rem;">Category</div>
+                                    <div>{{ ticket.category|capitalize }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message -->
+                    <div class="card-hd">
+                        <div class="card-header-hd">
+                            <p style="font-weight:600; margin:0; font-size:0.95rem;">{{ ticket.subject }}</p>
+                        </div>
+                        <div class="card-body-hd">
+                            <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.8rem;">Message</div>
+                            <div style="background:rgba(13,27,42,0.5); border:1px solid var(--border); border-radius:10px; padding:1.2rem; font-size:0.92rem; line-height:1.75; color:var(--text-main);">
+                                {{ ticket.message }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right: AI Analysis -->
+                <div class="col-lg-5">
+                    <div class="card-hd h-100" style="border-color:rgba(14,165,160,0.25);">
+                        <div class="card-header-hd" style="background:rgba(14,165,160,0.08); border-bottom-color:rgba(14,165,160,0.2);">
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="font-size:1rem;">🤖</span>
+                                <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--teal); margin:0;">AI Analysis</p>
+                            </div>
+                        </div>
+                        <div class="card-body-hd">
+
+                            <!-- Sentiment -->
+                            <div style="margin-bottom:1.8rem;">
+                                <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.7rem;">Sentiment Analysis</div>
+                                <div style="margin-bottom:0.6rem;">
+                                    {% if ticket.sentiment == 'Positive' %}
+                                        <span class="badge-hd badge-positive" style="font-size:0.85rem; padding:0.4em 0.9em;">Positive</span>
+                                    {% elif ticket.sentiment == 'Negative' %}
+                                        <span class="badge-hd badge-negative" style="font-size:0.85rem; padding:0.4em 0.9em;">Negative</span>
+                                    {% else %}
+                                        <span class="badge-hd badge-neutral" style="font-size:0.85rem; padding:0.4em 0.9em;">Neutral</span>
+                                    {% endif %}
+                                </div>
+                                <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.55; margin:0;">
+                                    The AI classified this message as <strong style="color:var(--text-main);">{{ ticket.sentiment|lower }}</strong> in tone.
+                                </p>
+                            </div>
+
+                            <div class="divider-hd"></div>
+
+                            <!-- Priority -->
+                            <div style="margin-top:1.5rem;">
+                                <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.7rem;">Auto-assigned Priority</div>
+                                <div style="margin-bottom:0.6rem;">
+                                    {% if ticket.priority == 'Urgent' %}
+                                        <span class="badge-hd badge-urgent" style="font-size:0.85rem; padding:0.4em 0.9em;">Urgent</span>
+                                    {% else %}
+                                        <span class="badge-hd badge-normal" style="font-size:0.85rem; padding:0.4em 0.9em;">Normal</span>
+                                    {% endif %}
+                                </div>
+                                <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.55; margin:0;">
+                                    {% if ticket.priority == 'Urgent' %}
+                                        Flagged as urgent due to detected negative sentiment.
+                                    {% else %}
+                                        Normal priority assigned based on neutral or positive sentiment.
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex gap-3 flex-wrap mt-4 mb-2">
+                <a href="/update-status/{{ ticket.id }}" class="btn-teal" style="font-size:0.95rem; padding:0.7rem 1.8rem;">Update Status</a>
+                <a href="/dashboard" class="btn-ghost" style="font-size:0.95rem; padding:0.7rem 1.8rem;">← Back to Dashboard</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

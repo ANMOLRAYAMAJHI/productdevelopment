@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Ticket - AI Customer Helpdesk{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:1.5rem;">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="card-hd">
+                <div class="card-header-hd" style="padding:1.6rem 2rem;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width:44px;height:44px;background:rgba(14,165,160,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🎫</div>
+                        <div>
+                            <h2 class="section-title" style="font-size:1.4rem; margin:0;">Submit a Support Ticket</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0;">We'll get back to you as soon as possible</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body-hd" style="padding:2rem;">
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                {{ form.customer_name.label(class='form-label-hd') }}
+                                {% if form.customer_name.errors %}
+                                    {{ form.customer_name(class='form-control-hd is-invalid w-100', placeholder='John Doe') }}
+                                    <div class="invalid-text">{% for e in form.customer_name.errors %}{{ e }}{% endfor %}</div>
+                                {% else %}
+                                    {{ form.customer_name(class='form-control-hd w-100', placeholder='John Doe') }}
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{ form.email.label(class='form-label-hd') }}
+                                {% if form.email.errors %}
+                                    {{ form.email(class='form-control-hd is-invalid w-100', placeholder='john@example.com') }}
+                                    <div class="invalid-text">{% for e in form.email.errors %}{{ e }}{% endfor %}</div>
+                                {% else %}
+                                    {{ form.email(class='form-control-hd w-100', placeholder='john@example.com') }}
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{ form.category.label(class='form-label-hd') }}
+                                {% if form.category.errors %}
+                                    {{ form.category(class='form-select-hd is-invalid w-100') }}
+                                    <div class="invalid-text">{% for e in form.category.errors %}{{ e }}{% endfor %}</div>
+                                {% else %}
+                                    {{ form.category(class='form-select-hd w-100') }}
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{ form.subject.label(class='form-label-hd') }}
+                                {% if form.subject.errors %}
+                                    {{ form.subject(class='form-control-hd is-invalid w-100', placeholder='Brief description of your issue') }}
+                                    <div class="invalid-text">{% for e in form.subject.errors %}{{ e }}{% endfor %}</div>
+                                {% else %}
+                                    {{ form.subject(class='form-control-hd w-100', placeholder='Brief description of your issue') }}
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12">
+                                {{ form.message.label(class='form-label-hd') }}
+                                {% if form.message.errors %}
+                                    {{ form.message(class='form-control-hd is-invalid w-100', rows=7, placeholder='Please describe your issue in detail...') }}
+                                    <div class="invalid-text">{% for e in form.message.errors %}{{ e }}{% endfor %}</div>
+                                {% else %}
+                                    {{ form.message(class='form-control-hd w-100', rows=7, placeholder='Please describe your issue in detail. Include any error messages, steps to reproduce, or other relevant information.') }}
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12 d-flex gap-3 flex-wrap justify-content-between align-items-center" style="padding-top:0.5rem;">
+                                {{ form.submit(class='btn-teal', style='font-size:1rem; padding:0.75rem 2.2rem;') }}
+                                <a href="/" class="btn-ghost" style="font-size:0.95rem; padding:0.75rem 1.6rem;">Cancel</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- How it works -->
+            <div class="card-hd mt-4" style="border-color:rgba(14,165,160,0.2); background:rgba(14,165,160,0.04);">
+                <div class="card-body-hd">
+                    <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--teal); margin-bottom:1rem;">How it works</p>
+                    <div class="row g-3">
+                        {% set steps = [
+                            ('1', 'Fill the form', 'Provide your details and a clear description of your issue.'),
+                            ('2', 'AI analysis', 'Our system detects sentiment and auto-assigns priority.'),
+                            ('3', 'Get a ticket ID', 'You receive a unique ID to track your request.'),
+                            ('4', 'We respond', 'Our team contacts you with a resolution.')
+                        ] %}
+                        {% for num, title, desc in steps %}
+                        <div class="col-sm-6 d-flex gap-3 align-items-start">
+                            <div style="width:28px;height:28px;background:rgba(14,165,160,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:var(--teal);flex-shrink:0;margin-top:2px;">{{ num }}</div>
+                            <div>
+                                <div style="font-weight:600; font-size:0.88rem; color:var(--text-main);">{{ title }}</div>
+                                <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">{{ desc }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

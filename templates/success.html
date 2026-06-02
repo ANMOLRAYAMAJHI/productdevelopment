@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Ticket Submitted - AI Customer Helpdesk{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:1.5rem;">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+
+            <!-- Success Banner -->
+            <div style="text-align:center; padding:2.5rem 1rem 2rem;">
+                <div style="width:72px;height:72px;background:rgba(16,185,129,0.15);border:2px solid rgba(16,185,129,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1.2rem;">✓</div>
+                <h1 class="section-title" style="font-size:2rem; margin-bottom:0.5rem;">Ticket Submitted!</h1>
+                <p style="color:var(--text-muted); font-size:1rem;">Thank you for reaching out. We've received your request.</p>
+            </div>
+
+            {% if ticket %}
+            <!-- Ticket Details Card -->
+            <div class="card-hd" style="border-color:rgba(16,185,129,0.25);">
+                <div class="card-header-hd" style="background:rgba(16,185,129,0.08); border-bottom-color:rgba(16,185,129,0.2);">
+                    <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#6ee7b7; margin:0;">Your Ticket Details</p>
+                </div>
+                <div class="card-body-hd">
+
+                    <!-- Ticket ID + Status -->
+                    <div class="row g-4 mb-1">
+                        <div class="col-sm-6 text-center" style="padding:1.2rem; background:rgba(13,27,42,0.4); border-radius:12px;">
+                            <div style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem;">Ticket ID</div>
+                            <div class="section-title" style="font-size:2.5rem; color:var(--teal-light);">#{{ ticket.id }}</div>
+                        </div>
+                        <div class="col-sm-6 text-center" style="padding:1.2rem; background:rgba(13,27,42,0.4); border-radius:12px;">
+                            <div style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem;">Status</div>
+                            <div style="margin-top:0.6rem;"><span class="badge-hd badge-open" style="font-size:0.9rem; padding:0.5em 1em;">{{ ticket.status }}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="divider-hd"></div>
+
+                    <!-- Meta -->
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div style="font-size:0.76rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.3rem;">Category</div>
+                            <div style="font-size:0.92rem;">{{ ticket.category|capitalize }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div style="font-size:0.76rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.3rem;">Priority</div>
+                            <div>
+                                {% if ticket.priority == 'Urgent' %}
+                                    <span class="badge-hd badge-urgent">Urgent</span>
+                                {% else %}
+                                    <span class="badge-hd badge-normal">Normal</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div style="font-size:0.76rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.3rem;">Subject</div>
+                            <div style="font-size:0.95rem; font-weight:500;">{{ ticket.subject }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div style="font-size:0.76rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.3rem;">Submitted</div>
+                            <div style="font-size:0.88rem; color:var(--text-muted);">{{ ticket.created_date.strftime('%B %d, %Y at %I:%M %p') }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div style="font-size:0.76rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.3rem;">AI Sentiment</div>
+                            <div>
+                                {% if ticket.sentiment == 'Positive' %}
+                                    <span class="badge-hd badge-positive">Positive</span>
+                                {% elif ticket.sentiment == 'Negative' %}
+                                    <span class="badge-hd badge-negative">Negative</span>
+                                {% else %}
+                                    <span class="badge-hd badge-neutral">Neutral</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider-hd"></div>
+
+                    <!-- What's next -->
+                    <div style="background:rgba(14,165,160,0.07); border:1px solid rgba(14,165,160,0.2); border-radius:10px; padding:1.2rem;">
+                        <div style="font-size:0.82rem; font-weight:700; color:var(--teal); margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.06em;">What's Next?</div>
+                        <p style="font-size:0.88rem; color:var(--text-muted); margin:0; line-height:1.65;">
+                            Our support team will review your ticket shortly and send updates to <strong style="color:var(--text-main);">{{ ticket.email }}</strong>.
+                            Save your ticket ID <strong style="color:var(--teal-light);">#{{ ticket.id }}</strong> for reference.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="d-flex gap-3 justify-content-center flex-wrap mt-4 pb-2">
+                <a href="/" class="btn-teal" style="font-size:0.95rem; padding:0.7rem 1.8rem;">← Back to Home</a>
+                <a href="/submit" class="btn-ghost" style="font-size:0.95rem; padding:0.7rem 1.8rem;">Submit Another Ticket</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

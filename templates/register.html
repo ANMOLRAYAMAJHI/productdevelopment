@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Register - AI Customer Helpdesk{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2rem;">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+
+            <div class="card-hd">
+                <div class="card-header-hd" style="text-align:center; padding:2rem 1.6rem 1.4rem;">
+                    <div style="width:52px;height:52px;background:rgba(245,158,11,0.15);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;">🛡️</div>
+                    <h2 class="section-title" style="font-size:1.5rem; margin-bottom:0.3rem;">Create Admin Account</h2>
+                    <p style="color:var(--text-muted); font-size:0.87rem; margin:0;">Set up the first administrator for this system</p>
+                </div>
+                <div class="card-body-hd">
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-4">
+                            {{ form.username.label(class='form-label-hd') }}
+                            {% if form.username.errors %}
+                                {{ form.username(class='form-control-hd is-invalid w-100', placeholder='Choose a username') }}
+                                <div class="invalid-text">{% for e in form.username.errors %}{{ e }}{% endfor %}</div>
+                            {% else %}
+                                {{ form.username(class='form-control-hd w-100', placeholder='Choose a username') }}
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.password.label(class='form-label-hd') }}
+                            {% if form.password.errors %}
+                                {{ form.password(class='form-control-hd is-invalid w-100', placeholder='Strong password') }}
+                                <div class="invalid-text">{% for e in form.password.errors %}{{ e }}{% endfor %}</div>
+                            {% else %}
+                                {{ form.password(class='form-control-hd w-100', placeholder='Create a strong password') }}
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-5">
+                            {{ form.password_confirm.label(class='form-label-hd') }}
+                            {% if form.password_confirm.errors %}
+                                {{ form.password_confirm(class='form-control-hd is-invalid w-100', placeholder='Confirm password') }}
+                                <div class="invalid-text">{% for e in form.password_confirm.errors %}{{ e }}{% endfor %}</div>
+                            {% else %}
+                                {{ form.password_confirm(class='form-control-hd w-100', placeholder='Confirm your password') }}
+                            {% endif %}
+                        </div>
+
+                        {{ form.submit(class='btn-amber w-100', style='font-size:1rem; padding:0.75rem;') }}
+                    </form>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:1.5rem; color:var(--text-muted); font-size:0.88rem;">
+                Already registered? <a href="/login" style="color:var(--teal); font-weight:600;">Login here →</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

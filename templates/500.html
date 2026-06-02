@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Server Error - 500{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:3rem;">
+    <div style="text-align:center; max-width:480px; margin:0 auto;">
+
+        <div class="section-title" style="font-size:7rem; line-height:1; color:var(--navy-light); margin-bottom:0; letter-spacing:-4px;">
+            5<span style="color:var(--coral);">0</span>0
+        </div>
+
+        <h2 style="font-size:1.5rem; font-weight:700; color:var(--text-main); margin-bottom:0.8rem; margin-top:0.5rem;">Server Error</h2>
+        <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.65; margin-bottom:2.5rem;">
+            Something went wrong on our end. Our team has been notified. Please try again in a moment.
+        </p>
+
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="/" class="btn-teal" style="font-size:0.95rem; padding:0.7rem 1.8rem;">← Back to Home</a>
+            <a href="/submit" class="btn-ghost" style="font-size:0.95rem; padding:0.7rem 1.8rem;">Submit a Ticket</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
