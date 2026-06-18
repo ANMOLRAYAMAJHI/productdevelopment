@@ -20,7 +20,9 @@ class Config:
     ORACLE_PORT = os.environ.get('ORACLE_PORT', '1521')
     ORACLE_SERVICE = os.environ.get('ORACLE_SERVICE', 'xepdb1')
     ORACLE_CONNECTION_NAME = os.environ.get('ORACLE_CONNECTION_NAME', 'Application development database')
-    ORACLE_ENABLED = True
+    # Disable Oracle sync by default to allow running the app without oracledb
+    # Set ORACLE_ENABLED=True in environment or configuration to enable it.
+    ORACLE_ENABLED = False
     
     # Session configuration
     PERMANENT_SESSION_LIFETIME = 3600  # 1 hour

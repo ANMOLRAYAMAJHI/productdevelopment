@@ -3,7 +3,6 @@ Oracle Database Sync Module
 Automatically syncs data from SQLite to Oracle database
 """
 
-import oracledb
 from datetime import datetime
 from config import Config
 
@@ -19,14 +18,20 @@ class OracleSync:
         """Establish connection to Oracle database"""
         if not self.enabled:
             return False
-        
         try:
-            # Thick mode connection using TNS entry
-            oracledb.init_oracle_client()
-        except:
-            pass
-        
+            import oracledb
+        except Exception as e:
+            print(f"⚠️  oracledb not available: {e}")
+            self.enabled = False
+            return False
+
         try:
+            # Attempt to initialize thick client if available
+            try:
+                oracledb.init_oracle_client()
+            except Exception:
+                pass
+
             self.connection = oracledb.connect(
                 user=Config.ORACLE_USER,
                 password=Config.ORACLE_PASSWORD,
