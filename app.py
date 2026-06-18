@@ -24,6 +24,8 @@ from models import db, Admin, Ticket
 from forms import TicketForm, LoginForm, RegisterForm, UpdateStatusForm
 from sentiment import SentimentAnalyzer
 import oracle_sync
+from flask_wtf.csrf import CSRFProtect, generate_csrf, validate_csrf
+from flask_wtf.csrf import CSRFError
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -33,6 +35,19 @@ def create_app(config_name='development'):
     """Application factory"""
     app = flask.Flask(__name__, template_folder='templates', static_folder='static')
     app.config.from_object(config[config_name])
+    # Ensure database directory exists for SQLite file-based DB
+    db_path = app.config.get('DATABASE_PATH')
+    if db_path:
+        db_dir = os.path.dirname(db_path)
+        try:
+            os.makedirs(db_dir, exist_ok=True)
+        except Exception:
+            logger.warning('Could not create database directory: %s', db_dir)
+    # Initialize CSRF protection (ensures forms validate CSRF tokens)
+    csrf = CSRFProtect()
+    csrf.init_app(app)
+    # Make `csrf_token()` available in templates for meta tags or ajax calls
+    app.jinja_env.globals['csrf_token'] = generate_csrf
     
     # Initialize database
     db.init_app(app)
@@ -71,6 +86,45 @@ def submit_ticket():
     """Submit a support ticket"""
     form = TicketForm()
     
+    # Support both normal form POST and JSON (AJAX) POST
+    if flask.request.is_json:
+        data = flask.request.get_json() or {}
+        # Validate CSRF token from header
+        token = flask.request.headers.get('X-CSRFToken') or flask.request.headers.get('X-CSRF-Token')
+        try:
+            validate_csrf(token)
+        except Exception as e:
+            return flask.jsonify({'success': False, 'errors': {'csrf': ['Invalid CSRF token']}}), 400
+
+        # Build form from JSON payload (disable automatic CSRF on the form)
+        form_json = TicketForm(formdata=None, data=data, meta={'csrf': False})
+        if form_json.validate():
+            try:
+                analysis = SentimentAnalyzer.analyze(form_json.message.data)
+                sentiment = analysis['sentiment']
+                priority = SentimentAnalyzer.get_priority(sentiment)
+
+                ticket = Ticket(
+                    customer_name=form_json.customer_name.data,
+                    email=form_json.email.data,
+                    category=form_json.category.data,
+                    subject=form_json.subject.data,
+                    message=form_json.message.data,
+                    sentiment=sentiment,
+                    priority=priority,
+                    status='Open'
+                )
+                db.session.add(ticket)
+                db.session.commit()
+                logger.info(f'Ticket #{ticket.id} created via AJAX')
+                return flask.jsonify({'success': True, 'ticket_id': ticket.id}), 201
+            except Exception as e:
+                db.session.rollback()
+                logger.error(f'Error creating ticket via AJAX: {str(e)}')
+                return flask.jsonify({'success': False, 'errors': {'server': ['Failed to create ticket']}}), 500
+        else:
+            return flask.jsonify({'success': False, 'errors': form_json.errors}), 400
+
     if form.validate_on_submit():
         try:
             # Analyze sentiment
@@ -101,6 +155,18 @@ def submit_ticket():
             db.session.rollback()
             logger.error(f'Error creating ticket: {str(e)}')
             flask.flash('Error submitting ticket. Please try again.', 'danger')
+    else:
+        # If this was a POST but validation failed, log details to help debugging
+        if flask.request.method == 'POST':
+            logger.info('Ticket form validation failed: %s', form.errors)
+            # Show user the first validation error (keep it friendly)
+            first_err = None
+            for field, errs in form.errors.items():
+                if errs:
+                    first_err = errs[0]
+                    break
+            if first_err:
+                flask.flash(first_err, 'warning')
     
     return flask.render_template('submit.html', form=form)
 
@@ -144,8 +210,9 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     """Admin registration (first admin only for security)"""
-    # Check if any admin exists
-    if Admin.query.first() is not None:
+    # Registration allowed only if no admin exists, or explicitly enabled
+    allow_registration = app.config.get('ALLOW_REGISTRATION', False)
+    if Admin.query.first() is not None and not allow_registration:
         flask.flash('Registration is closed', 'warning')
         return flask.redirect(flask.url_for('login'))
     

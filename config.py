@@ -28,6 +28,8 @@ class Config:
     PERMANENT_SESSION_LIFETIME = 3600  # 1 hour
     SESSION_COOKIE_SECURE = False  # Set to True in production
     SESSION_COOKIE_HTTPONLY = True
+    # Allow enabling admin registration beyond first-admin bootstrap
+    ALLOW_REGISTRATION = False
     
     # Application settings
     TICKETS_PER_PAGE = 10

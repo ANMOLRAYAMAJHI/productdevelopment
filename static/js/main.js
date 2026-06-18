@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initPopovers();
     initTooltips();
     setupFormValidation();
-    setupTableInteractions();
+    // table interactions handled via CSS for better performance
     setupAutoSubmitFilters();
     setupFlashAutoDismiss();
 });
@@ -44,14 +44,8 @@ function setupFormValidation() {
 // CSS handles hover; this is kept for any dynamic tables added via JS.
 
 function setupTableInteractions() {
-    document.querySelectorAll('table tbody tr').forEach(row => {
-        row.addEventListener('mouseenter', function () {
-            this.style.background = 'rgba(14, 165, 160, 0.05)';
-        });
-        row.addEventListener('mouseleave', function () {
-            this.style.background = '';
-        });
-    });
+    // Intentionally left blank — CSS :hover handles visual feedback to avoid
+    // adding many JS listeners which can cause jank on pages with many rows.
 }
 
 /* ── AUTO-SUBMIT FILTERS ────────────────────────────────────── */
@@ -176,6 +170,79 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
     }
 }
 
+/* ── AJAX FORM SUBMIT (Ticket) ───────────────────────────────────── */
+const ticketForm = document.getElementById('ticket-form');
+if (ticketForm) {
+    ticketForm.addEventListener('submit', function (e) {
+        // If form is marked for AJAX, handle via fetch and show loading state
+        if (ticketForm.getAttribute('data-ajax') === 'true') {
+            e.preventDefault();
+            const btn = document.getElementById('submit-ticket-btn');
+            // collect values
+            const payload = {
+                customer_name: ticketForm.querySelector('[name="customer_name"]').value,
+                email: ticketForm.querySelector('[name="email"]').value,
+                category: ticketForm.querySelector('[name="category"]').value,
+                subject: ticketForm.querySelector('[name="subject"]').value,
+                message: ticketForm.querySelector('[name="message"]').value
+            };
+
+            const overlay = document.getElementById('submit-overlay');
+            if (overlay) overlay.style.display = 'flex';
+
+            const promise = (async () => {
+                // clear existing field errors
+                ticketForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                ticketForm.querySelectorAll('.invalid-text').forEach(el => el.remove());
+
+                try {
+                    const res = await fetch('/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCsrfToken()
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (res.ok) {
+                        // success — redirect to success page
+                        window.location.href = '/success';
+                        return;
+                    }
+
+                    const err = await res.json().catch(() => null);
+                    if (err && err.errors) {
+                        // show field-level errors
+                        for (const [field, messages] of Object.entries(err.errors)) {
+                            const input = ticketForm.querySelector('[name="' + field + '"]');
+                            if (input) {
+                                input.classList.add('is-invalid');
+                                const div = document.createElement('div');
+                                div.className = 'invalid-text';
+                                div.textContent = messages.join('; ');
+                                input.parentElement.appendChild(div);
+                            }
+                        }
+                        const first = Object.values(err.errors)[0][0];
+                        showNotification(first, 'danger');
+                        return;
+                    }
+
+                    showNotification('Submission failed. Please try again.', 'danger');
+                } catch (err) {
+                    console.error('Submit error:', err);
+                    showNotification('Network error. Please try again.', 'danger');
+                }
+            })();
+
+            // ensure overlay is hidden when done
+            promise.finally(() => { if (overlay) overlay.style.display = 'none'; });
+            withButtonLoading(btn, promise);
+        }
+    });
+}
+
 /* ── CSRF ───────────────────────────────────────────────────── */
 
 function getCsrfToken() {
@@ -223,18 +290,16 @@ function animateCounter(el, target, duration = 800) {
 }
 
 // Auto-animate stat values when they're updated
-const statObserver = new MutationObserver(mutations => {
-    mutations.forEach(({ target, oldValue }) => {
-        const newVal = parseInt(target.textContent, 10);
-        if (!isNaN(newVal) && target.textContent !== '—') {
-            animateCounter(target, newVal, 700);
-        }
-    });
-});
-
-document.querySelectorAll('.stat-value').forEach(el => {
-    statObserver.observe(el, { characterData: false, childList: true, subtree: true });
-});
+// Provide helper to animate stat values from code when stats are updated
+function updateStatValueById(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (isNaN(parseInt(value, 10))) {
+        el.textContent = value;
+        return;
+    }
+    animateCounter(el, parseInt(value, 10), 700);
+}
 
 /* ── GLOBAL EXPORT ──────────────────────────────────────────── */
 

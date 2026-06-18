@@ -174,10 +174,18 @@
         try {
             const response = await fetch('/api/tickets/stats');
             const data = await response.json();
-            document.getElementById('total-tickets').textContent = data.total;
-            document.getElementById('open-tickets').textContent = data.open;
-            document.getElementById('in-progress-tickets').textContent = data.in_progress;
-            document.getElementById('urgent-tickets').textContent = data.urgent;
+            // Use the page-level helper to animate counters without global observers
+            if (window.updateStatValueById) {
+                updateStatValueById('total-tickets', data.total);
+                updateStatValueById('open-tickets', data.open);
+                updateStatValueById('in-progress-tickets', data.in_progress);
+                updateStatValueById('urgent-tickets', data.urgent);
+            } else {
+                document.getElementById('total-tickets').textContent = data.total;
+                document.getElementById('open-tickets').textContent = data.open;
+                document.getElementById('in-progress-tickets').textContent = data.in_progress;
+                document.getElementById('urgent-tickets').textContent = data.urgent;
+            }
         } catch (e) { console.error('Stats error:', e); }
     }
     document.addEventListener('DOMContentLoaded', loadStats);
