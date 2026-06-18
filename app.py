@@ -3,10 +3,22 @@ Main Flask application for AI-Powered Customer Helpdesk System
 """
 import os
 import logging
-import flask
 from functools import wraps
 from datetime import datetime
-from sqlalchemy.exc import IntegrityError
+
+# Provide clearer error messages when optional third-party
+# dependencies are not installed in the user's environment.
+try:
+    import flask
+except Exception as _err: 
+    raise RuntimeError(
+    ) from _err
+
+try:
+    from sqlalchemy.exc import IntegrityError
+except Exception as _err:  # pragma: no cover - environment issue
+    raise RuntimeError(
+    ) from _err
 from config import config
 from models import db, Admin, Ticket
 from forms import TicketForm, LoginForm, RegisterForm, UpdateStatusForm

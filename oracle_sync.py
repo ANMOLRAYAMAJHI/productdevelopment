@@ -32,7 +32,7 @@ class OracleSync:
                 password=Config.ORACLE_PASSWORD,
                 host=Config.ORACLE_HOST,
                 port=int(Config.ORACLE_PORT),
-                service_name='xepdb1'
+                service_name=Config.ORACLE_SERVICE
             )
             self.cursor = self.connection.cursor()
             print("✅ Connected to Oracle database for sync")

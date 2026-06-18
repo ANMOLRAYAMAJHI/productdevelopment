@@ -13,10 +13,13 @@ class Config:
     SQLALCHEMY_DATABASE_URI = f'sqlite:///{DATABASE_PATH}'
     
     # Oracle configuration for data warehouse sync
-    ORACLE_USER = os.environ.get('ORACLE_USER', 'stamford')
+    # Oracle connection defaults (can be overridden via environment variables)
+    ORACLE_USER = os.environ.get('ORACLE_USER', 'Stamford')
     ORACLE_PASSWORD = os.environ.get('ORACLE_PASSWORD', 'stamford123')
     ORACLE_HOST = os.environ.get('ORACLE_HOST', 'localhost')
     ORACLE_PORT = os.environ.get('ORACLE_PORT', '1521')
+    ORACLE_SERVICE = os.environ.get('ORACLE_SERVICE', 'xepdb1')
+    ORACLE_CONNECTION_NAME = os.environ.get('ORACLE_CONNECTION_NAME', 'Application development database')
     ORACLE_ENABLED = True
     
     # Session configuration

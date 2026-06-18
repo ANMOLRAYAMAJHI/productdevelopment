@@ -122,6 +122,11 @@ python -m unittest tests.TestModels -v
 | `Port 5000 already in use` | Change port in `app.py`: `app.run(port=5001)` |
 | `Database locked` | Delete `database/helpdesk.db` and restart |
 | `Permission denied` | Run terminal as administrator (Windows) or use `sudo` (Linux/Mac) |
+| `Application Control policy blocked execution` | Some corporate or system policies prevent running Python executables inside a local virtualenv. If `pip` or the venv `python.exe` fails to run, try:
+1. Run the terminal as Administrator and retry the install command.
+2. Use the system Python to install dependencies: `python -m pip install -r requirements.txt`.
+3. If policy still blocks execution, ask your IT/security team to allow execution, or install dependencies on a developer machine where policies permit.
+
 
 ## Production Deployment
 
