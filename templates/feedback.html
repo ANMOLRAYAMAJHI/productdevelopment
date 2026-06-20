@@ -3,62 +3,214 @@
 {% block title %}Customer Feedback - {{ site_name }}{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="text-center mb-5">
-        <p class="section-subtitle">Customer Feedback</p>
-        <h1 class="section-title">What customers are saying.</h1>
-        <p class="hero-copy mx-auto" style="max-width:720px;">Read testimonials, ratings, and support success stories from customers who rely on our AI-powered helpdesk and service portfolio.</p>
-    </div>
+<style>
+/* ── Reveals ── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.55s ease,transform 0.55s ease;}
+.reveal.visible{opacity:1;transform:none;}
 
-    <div class="row g-4 mb-4">
-        <div class="col-md-4">
-            <div class="stat-card c-teal">
-                <div class="stat-label">Average Rating</div>
-                <div class="stat-value">{{ average_rating }} / 5</div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card c-amber">
-                <div class="stat-label">Total Reviews</div>
-                <div class="stat-value">{{ total_reviews }}</div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card c-success">
-                <div class="stat-label">Positive Feedback</div>
-                <div class="stat-value">{{ positive_ratio }}%</div>
-            </div>
-        </div>
-    </div>
+/* ── Hero orbs ── */
+.fb-hero{position:relative;overflow:hidden;padding:4.5rem 0 2.5rem;}
+.f-orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.13;pointer-events:none;}
+.f-orb-1{width:400px;height:400px;background:radial-gradient(circle,#2563eb,transparent);top:-80px;right:-60px;animation:forb 11s ease-in-out infinite alternate;}
+.f-orb-2{width:280px;height:280px;background:radial-gradient(circle,#60a5fa,transparent);bottom:-50px;left:-40px;animation:forb 14s ease-in-out infinite alternate-reverse;}
+@keyframes forb{from{transform:translate(0,0);}to{transform:translate(16px,12px);}}
 
-    <div class="row g-4">
-        {% if reviews %}
-            {% for review in reviews %}
-            <div class="col-md-6 col-xl-4">
-                <div class="card-hd h-100 review-card">
-                    <div class="card-body-hd">
-                        <div class="d-flex align-items-center justify-content-between mb-3 gap-2 flex-wrap">
-                            <div>
-                                <h3 class="review-name">{{ review.name }}</h3>
-                                {% if review.role %}
-                                <div class="review-role">{{ review.role }}</div>
-                                {% endif %}
-                            </div>
-                            <span class="badge-hd badge-closed">{{ review.rating }} / 5</span>
-                        </div>
-                        <p class="review-text">{{ review.message }}</p>
-                        <div class="review-date">{{ review.created_date.strftime('%b %d, %Y') }}</div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <div class="col-12">
-                <div class="card-hd text-center" style="padding:3rem;">
-                    <p style="margin:0; color:var(--text-muted);">No feedback has been published yet.</p>
-                </div>
-            </div>
-        {% endif %}
+/* ── Stat cards ── */
+.stat-card{
+  border-radius:14px;padding:1.6rem;text-align:center;
+  opacity:0;transform:translateY(20px);
+  transition:opacity 0.55s ease,transform 0.55s ease;
+}
+.stat-card.visible{opacity:1;transform:none;}
+
+/* ── Review cards ── */
+.review-card {
+  position:relative; overflow:hidden; padding:0;
+  opacity:0; transform:translateY(28px) scale(0.97);
+  transition:opacity 0.55s ease, transform 0.55s ease;
+}
+.review-card.visible{opacity:1;transform:none;}
+.review-card:hover{border-color:var(--teal);box-shadow:0 8px 32px rgba(37,99,235,0.18);transform:translateY(-5px)!important;}
+.review-card::before{
+  content:'"';position:absolute;top:-8px;left:14px;
+  font-family:'Fraunces',serif;font-size:5.5rem;line-height:1;
+  color:rgba(37,99,235,0.12);pointer-events:none;
+}
+
+/* Star rating display */
+.star-row{display:flex;gap:3px;margin-bottom:0.8rem;}
+.star{
+  font-size:1rem;opacity:0;transform:scale(0.4) rotate(-30deg);
+  transition:opacity 0.3s,transform 0.3s;
+}
+.star.lit{color:#fbbf24;}
+.star.dim{color:rgba(255,255,255,0.15);}
+.star.animated{opacity:1;transform:none;}
+
+.review-name{font-weight:700;font-size:1.02rem;color:#fff;margin:0 0 0.2rem;}
+.review-role{font-size:0.8rem;color:var(--teal-light);margin-bottom:0.1rem;}
+.review-text{color:var(--text-muted);font-size:0.88rem;line-height:1.75;margin:0.75rem 0 0.5rem;}
+.review-date{font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:0.6rem;}
+
+/* Rating badge */
+.rating-badge{
+  display:inline-flex;align-items:center;gap:0.3rem;
+  background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);
+  color:#fbbf24;border-radius:20px;padding:0.3rem 0.75rem;
+  font-size:0.78rem;font-weight:700;
+}
+
+/* ── Overall rating big display ── */
+.rating-big{
+  font-family:'Fraunces',serif;font-size:4.5rem;font-weight:700;
+  line-height:1;color:var(--teal-light);
+}
+.rating-big-label{font-size:0.82rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-top:0.3rem;}
+.overall-stars{display:flex;gap:4px;justify-content:center;margin:0.5rem 0;}
+.overall-stars span{font-size:1.4rem;}
+
+/* ── Leave a review section ── */
+.star-picker{display:flex;gap:6px;margin:0.5rem 0 1rem;}
+.star-pick{font-size:1.6rem;cursor:pointer;filter:grayscale(1);transition:filter 0.15s,transform 0.15s;}
+.star-pick:hover,.star-pick.sel{filter:grayscale(0);transform:scale(1.2);}
+</style>
+
+<div class="fb-hero">
+  <div class="f-orb f-orb-1"></div>
+  <div class="f-orb f-orb-2"></div>
+  <div class="container">
+    <div class="text-center reveal">
+      <p class="section-subtitle">Customer Feedback</p>
+      <h1 class="section-title">What customers are saying.</h1>
+      <p class="hero-copy mx-auto" style="max-width:720px;">Read testimonials, ratings, and support success stories from teams who rely on our AI-powered helpdesk.</p>
     </div>
+  </div>
 </div>
+
+<div class="container pb-5">
+
+  <!-- Stats row -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="stat-card c-teal" style="position:relative;">
+        <div class="overall-stars">
+          {% for i in range(5) %}
+          <span>{% if i < (average_rating|round(0,'floor')|int) %}⭐{% else %}☆{% endif %}</span>
+          {% endfor %}
+        </div>
+        <div class="rating-big" data-target="{{ average_rating | replace('.', '') if average_rating else '48' }}" data-decimal="1">0.0</div>
+        <div class="rating-big-label">Average Rating / 5.0</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card c-amber">
+        <div class="stat-label">Total Reviews</div>
+        <div class="stat-value" data-target="{{ total_reviews }}">0</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card c-success">
+        <div class="stat-label">Positive Feedback</div>
+        <div class="stat-value" data-target="{{ positive_ratio }}" data-suffix="%">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews grid -->
+  <div class="row g-4">
+    {% if reviews %}
+      {% for review in reviews %}
+      <div class="col-md-6 col-xl-4">
+        <div class="card-hd h-100 review-card">
+          <div class="card-body-hd">
+            <div class="d-flex align-items-start justify-content-between mb-1 gap-2">
+              <div>
+                <div class="review-name">{{ review.name }}</div>
+                {% if review.role %}<div class="review-role">{{ review.role }}</div>{% endif %}
+              </div>
+              <div class="rating-badge">⭐ {{ review.rating }}/5</div>
+            </div>
+            <div class="star-row">
+              {% for i in range(5) %}
+              <span class="star {% if i < review.rating %}lit{% else %}dim{% endif %}">★</span>
+              {% endfor %}
+            </div>
+            <p class="review-text">{{ review.message }}</p>
+            <div class="review-date">{{ review.created_date.strftime('%b %d, %Y') }}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-12">
+        <div class="card-hd text-center" style="padding:3rem;">
+          <p style="margin:0; color:var(--text-muted);">No feedback has been published yet.</p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Leave feedback CTA -->
+  <div class="card-hd p-4 mt-5 reveal" style="background:linear-gradient(135deg,rgba(37,99,235,0.1),rgba(96,165,250,0.05));border-color:rgba(37,99,235,0.25);text-align:center;">
+    <p class="section-subtitle">Share your experience</p>
+    <h2 class="section-title">Happy with our service?</h2>
+    <p class="hero-copy mx-auto" style="max-width:520px;">Submit a ticket or reach out — we'd love to hear how we can make your experience even better.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+      <a href="/submit" class="btn-teal">Submit a Support Ticket</a>
+      <a href="/contact" class="btn-ghost">Contact Us</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});
+  },{threshold:0.08});
+  document.querySelectorAll('.reveal,.stat-card').forEach(el=>io.observe(el));
+
+  /* stagger review cards */
+  const cards = document.querySelectorAll('.review-card');
+  const cardIO = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');cardIO.unobserve(e.target);}});
+  },{threshold:0.1});
+  cards.forEach((c,i)=>{c.style.transitionDelay=(i%3*0.1)+'s';cardIO.observe(c);});
+
+  /* star animation per card */
+  const starIO = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      e.target.querySelectorAll('.star').forEach((s,i)=>{
+        setTimeout(()=>s.classList.add('animated'), i*80);
+      });
+      starIO.unobserve(e.target);
+    });
+  },{threshold:0.3});
+  cards.forEach(c=>starIO.observe(c));
+
+  /* animated counters */
+  document.querySelectorAll('.stat-value[data-target],.rating-big[data-target]').forEach(el=>{
+    const cio = new IntersectionObserver(entries=>{
+      if(!entries[0].isIntersecting) return;
+      const target = +el.dataset.target;
+      const suffix = el.dataset.suffix||'';
+      const isDecimal = !!el.dataset.decimal;
+      const dur=1400; const start=performance.now();
+      (function step(now){
+        const p=Math.min((now-start)/dur,1);
+        const ease=1-Math.pow(1-p,3);
+        if(isDecimal){
+          el.textContent=(ease*target/10).toFixed(1);
+        } else {
+          el.textContent=Math.round(ease*target)+suffix;
+        }
+        if(p<1)requestAnimationFrame(step);
+      })(start);
+      cio.unobserve(el);
+    },{threshold:0.5});
+    cio.observe(el);
+  });
+})();
+</script>
 {% endblock %}

@@ -1,124 +1,356 @@
 {% extends 'base.html' %}
 
-{% block title %}Home - AI Customer Helpdesk{% endblock %}
+{% block title %}Home - {{ site_name }}{% endblock %}
 
 {% block content %}
-<div class="container">
-    <section class="home-hero py-5">
-        <div class="row align-items-center gy-5">
-            <div class="col-lg-6">
-                <p class="eyebrow">AI-Powered Support</p>
-                <h1 class="hero-title">Fast, intelligent customer support designed for modern product teams.</h1>
-                <p class="hero-copy">{{ hero_tagline }} Experience ticket automation, sentiment-aware routing, and transparent updates from the first customer message to a successful resolution.</p>
-                <div class="d-flex gap-3 flex-wrap mt-4">
-                    <a href="/submit" class="btn-teal">Submit a Ticket</a>
-                    <a href="/assistant" class="btn-ghost">Open Virtual Assistant</a>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="assistant-card card-hd p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <span class="section-subtitle">Virtual Assistant</span>
-                            <h2 class="section-title" style="font-size:1.5rem; margin:0;">Quick help, anytime.</h2>
-                        </div>
-                        <span class="badge-hd badge-open">Live</span>
-                    </div>
-                    <div class="chat-preview">
-                        <div class="chat-message chat-message-user">Hi, I need help with my service request.</div>
-                        <div class="chat-message chat-message-bot">Great! I can guide you through submitting a ticket or checking the status of an existing request.</div>
-                        <div class="chat-message chat-message-user">Can I update my submission?</div>
-                        <div class="chat-message chat-message-bot">Yes. Use the dashboard after login, or open the assistant for instant guidance.</div>
-                    </div>
-                    <div class="mt-4">
-                        <a href="/assistant" class="btn-amber">Try the assistant</a>
-                    </div>
-                </div>
-            </div>
+<style>
+/* ── Hero ── */
+.hero-wrap {
+  position: relative;
+  overflow: hidden;
+  padding: 6rem 0 4rem;
+}
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.18;
+  pointer-events: none;
+  animation: orb-drift 12s ease-in-out infinite alternate;
+}
+.hero-orb-1 { width:520px; height:520px; background:radial-gradient(circle,#2563eb,transparent); top:-120px; left:-100px; animation-delay:0s; }
+.hero-orb-2 { width:380px; height:380px; background:radial-gradient(circle,#60a5fa,transparent); top:60px; right:-80px; animation-delay:-4s; }
+.hero-orb-3 { width:260px; height:260px; background:radial-gradient(circle,#1d4ed8,transparent); bottom:-60px; left:40%; animation-delay:-7s; }
+@keyframes orb-drift {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(30px,20px) scale(1.07); }
+}
+
+/* Typing cursor */
+.typed-text::after {
+  content: '|';
+  animation: blink 1s step-end infinite;
+  color: var(--teal);
+  margin-left: 2px;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+/* CTA buttons hover glow */
+.btn-teal { transition: box-shadow 0.25s, transform 0.2s; }
+.btn-teal:hover { box-shadow: 0 0 24px rgba(37,99,235,0.55); transform: translateY(-2px); }
+.btn-ghost { transition: box-shadow 0.25s, transform 0.2s; }
+.btn-ghost:hover { transform: translateY(-2px); }
+
+/* Chat preview animation */
+.chat-preview .chat-message { opacity: 0; transform: translateY(8px); animation: msg-in 0.4s ease forwards; }
+.chat-message:nth-child(1) { animation-delay: 0.3s; }
+.chat-message:nth-child(2) { animation-delay: 0.8s; }
+.chat-message:nth-child(3) { animation-delay: 1.4s; }
+.chat-message:nth-child(4) { animation-delay: 2.0s; }
+@keyframes msg-in { to { opacity:1; transform:none; } }
+
+/* Floating assistant card */
+.assistant-card { animation: float-card 6s ease-in-out infinite; }
+@keyframes float-card {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* ── Scroll-reveal base ── */
+.reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-left  { opacity: 0; transform: translateX(-40px); transition: opacity 0.65s ease, transform 0.65s ease; }
+.reveal-left.visible  { opacity: 1; transform: none; }
+.reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.65s ease, transform 0.65s ease; }
+.reveal-right.visible { opacity: 1; transform: none; }
+
+/* stagger siblings */
+.stagger .reveal:nth-child(1) { transition-delay: 0s; }
+.stagger .reveal:nth-child(2) { transition-delay: 0.1s; }
+.stagger .reveal:nth-child(3) { transition-delay: 0.2s; }
+.stagger .reveal:nth-child(4) { transition-delay: 0.3s; }
+
+/* ── Feature cards ── */
+.feature-card {
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+  cursor: default;
+}
+.feature-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 8px 36px rgba(37,99,235,0.22);
+  border-color: var(--teal);
+}
+.feature-icon { transition: transform 0.3s; display: inline-block; }
+.feature-card:hover .feature-icon { transform: scale(1.25) rotate(-5deg); }
+
+/* ── Process steps ── */
+.process-step-item {
+  display: flex; gap: 1rem; align-items: flex-start; padding: 0.9rem 0;
+  border-bottom: 1px solid var(--border); opacity: 0; transform: translateX(-20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.process-step-item:last-child { border-bottom: none; }
+.process-step-item.visible { opacity:1; transform:none; }
+.process-step-item:nth-child(1) { transition-delay: 0s; }
+.process-step-item:nth-child(2) { transition-delay: 0.12s; }
+.process-step-item:nth-child(3) { transition-delay: 0.24s; }
+.process-step-item:nth-child(4) { transition-delay: 0.36s; }
+.process-num {
+  min-width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--teal-light));
+  color: #fff; font-weight: 700; font-size: 0.85rem;
+  display: grid; place-items: center; flex-shrink: 0;
+}
+
+/* ── Stats strip ── */
+.stats-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin: 2.5rem 0; }
+.stats-strip-item { background:var(--navy-mid); padding:1.5rem; text-align:center; }
+.stats-strip-num { font-family:'Fraunces',serif; font-size:2.4rem; font-weight:700; color:var(--teal-light); line-height:1; }
+.stats-strip-label { font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-top:0.35rem; }
+@media (max-width:640px) { .stats-strip { grid-template-columns:repeat(2,1fr); } }
+
+/* ── Shimmer CTA ── */
+.cta-shimmer {
+  position:relative; overflow:hidden;
+}
+.cta-shimmer::before {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(110deg, transparent 20%, rgba(37,99,235,0.07) 50%, transparent 80%);
+  transform: translateX(-100%);
+  animation: shimmer 3s ease infinite;
+}
+@keyframes shimmer { to { transform: translateX(100%); } }
+
+/* Service pills motion */
+.service-pill {
+  background: rgba(37,99,235,0.12); border:1px solid rgba(37,99,235,0.3);
+  border-radius: 20px; padding: 0.45rem 1rem; font-size:0.85rem; font-weight:600;
+  color: var(--teal-light); transition: background 0.2s, transform 0.2s;
+  cursor: default;
+}
+.service-pill:hover { background: rgba(37,99,235,0.25); transform: scale(1.05); }
+</style>
+
+<div class="hero-wrap">
+  <!-- Background orbs -->
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+
+  <div class="container">
+    <section class="home-hero">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-6 reveal-left">
+          <p class="eyebrow">AI-Powered Support</p>
+          <h1 class="hero-title">Fast, intelligent customer support<br>designed for<span class="typed-text" id="typed-word"> modern teams.</span></h1>
+          <p class="hero-copy">{{ hero_tagline }} Experience ticket automation, sentiment-aware routing, and transparent updates from the first customer message to resolution.</p>
+          <div class="d-flex gap-3 flex-wrap mt-4">
+            <a href="/submit" class="btn-teal">Submit a Ticket</a>
+            <a href="/assistant" class="btn-ghost">Open Virtual Assistant</a>
+          </div>
         </div>
+        <div class="col-lg-6 reveal-right">
+          <div class="assistant-card card-hd p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div>
+                <span class="section-subtitle">Virtual Assistant</span>
+                <h2 class="section-title" style="font-size:1.5rem; margin:0;">Quick help, anytime.</h2>
+              </div>
+              <span class="badge-hd badge-open">Live</span>
+            </div>
+            <div class="chat-preview">
+              <div class="chat-message chat-message-user">Hi, I need help with my service request.</div>
+              <div class="chat-message chat-message-bot">Great! I can guide you through submitting a ticket or checking the status of an existing request.</div>
+              <div class="chat-message chat-message-user">Can I update my submission?</div>
+              <div class="chat-message chat-message-bot">Yes. Use the dashboard after login, or open the assistant for instant guidance.</div>
+            </div>
+            <div class="mt-4">
+              <a href="/assistant" class="btn-amber">Try the assistant</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section id="features" class="home-section py-5">
-        <div class="text-center mb-4">
-            <p class="section-subtitle">Key benefits</p>
-            <h2 class="section-title">All the support tools your team needs.</h2>
-        </div>
-        <div class="row g-4 mt-3">
-            <div class="col-md-6 col-xl-3">
-                <div class="feature-card h-100">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Instant intelligence</h3>
-                    <p>Customer inquiries are analyzed immediately for sentiment, priority, and routing suggestions.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="feature-card h-100">
-                    <div class="feature-icon">🧠</div>
-                    <h3>Smart triage</h3>
-                    <p>Issues are automatically grouped and escalated so urgent problems get attention fast.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="feature-card h-100">
-                    <div class="feature-icon">📡</div>
-                    <h3>Transparent tracking</h3>
-                    <p>Customers receive status updates and can track ticket progress without extra follow-up.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="feature-card h-100">
-                    <div class="feature-icon">🔐</div>
-                    <h3>Secure by default</h3>
-                    <p>Forms use CSRF protection and safe input handling to keep sensitive communication secure.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="home-section py-5">
-        <div class="row g-4 align-items-center">
-            <div class="col-lg-6">
-                <div class="card-hd p-4">
-                    <span class="section-subtitle">Process</span>
-                    <h2 class="section-title">How help arrives</h2>
-                    <ol class="process-steps mt-4">
-                        <li><strong>Submit:</strong> Customers send requests with a simple form.</li>
-                        <li><strong>Analyze:</strong> AI evaluates tone and priority automatically.</li>
-                        <li><strong>Route:</strong> Tickets move to the right team without manual handoff.</li>
-                        <li><strong>Resolve:</strong> Transparent updates keep everyone aligned.</li>
-                    </ol>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="card-hd p-4">
-                    <span class="section-subtitle">Overview</span>
-                    <h2 class="section-title">Built for product and support teams</h2>
-                    <p class="mt-3">This platform blends customer-facing support, admin management, and analytics in one responsive system. It's designed for small teams that want a strong online presence with secure control over content, events, and messages.</p>
-                    <div class="row row-cols-1 row-cols-sm-2 g-3 mt-4">
-                        <div class="service-pill">Services</div>
-                        <div class="service-pill">Events</div>
-                        <div class="service-pill">Blog & Gallery</div>
-                        <div class="service-pill">Contact management</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="home-section py-5">
-        <div class="card-hd p-4">
-            <div class="row align-items-center gy-4">
-                <div class="col-lg-8">
-                    <span class="section-subtitle">Ready to get started?</span>
-                    <h2 class="section-title">Turn customer help into a smoother experience today.</h2>
-                    <p>Use the ticket form or launch the virtual assistant for fast support—everything is designed to work across desktop, tablet, and mobile.</p>
-                </div>
-                <div class="col-lg-4 text-lg-end">
-                    <a href="/submit" class="btn-teal">Submit a Ticket</a>
-                    <a href="/assistant" class="btn-ghost">Open Assistant</a>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Stats strip -->
+    <div class="stats-strip reveal">
+      <div class="stats-strip-item">
+        <div class="stats-strip-num" data-target="10000">0</div>
+        <div class="stats-strip-label">Active Users</div>
+      </div>
+      <div class="stats-strip-item">
+        <div class="stats-strip-num" data-target="34">0</div>
+        <div class="stats-strip-label">Countries</div>
+      </div>
+      <div class="stats-strip-item">
+        <div class="stats-strip-num" data-target="98">0</div>
+        <div class="stats-strip-label">% Satisfaction</div>
+      </div>
+      <div class="stats-strip-item">
+        <div class="stats-strip-num" data-target="60">0</div>
+        <div class="stats-strip-label">% Ticket Deflection</div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<div class="container">
+
+  <section id="features" class="home-section py-5">
+    <div class="text-center mb-4 reveal">
+      <p class="section-subtitle">Key benefits</p>
+      <h2 class="section-title">All the support tools your team needs.</h2>
+    </div>
+    <div class="row g-4 mt-3 stagger">
+      <div class="col-md-6 col-xl-3 reveal">
+        <div class="feature-card card-hd h-100 p-4">
+          <div class="feature-icon" style="font-size:2rem; margin-bottom:0.75rem;">⚡</div>
+          <h3>Instant intelligence</h3>
+          <p>Customer inquiries are analyzed immediately for sentiment, priority, and routing suggestions.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3 reveal">
+        <div class="feature-card card-hd h-100 p-4">
+          <div class="feature-icon" style="font-size:2rem; margin-bottom:0.75rem;">🧠</div>
+          <h3>Smart triage</h3>
+          <p>Issues are automatically grouped and escalated so urgent problems get attention fast.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3 reveal">
+        <div class="feature-card card-hd h-100 p-4">
+          <div class="feature-icon" style="font-size:2rem; margin-bottom:0.75rem;">📡</div>
+          <h3>Transparent tracking</h3>
+          <p>Customers receive status updates and can track ticket progress without extra follow-up.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3 reveal">
+        <div class="feature-card card-hd h-100 p-4">
+          <div class="feature-icon" style="font-size:2rem; margin-bottom:0.75rem;">🔐</div>
+          <h3>Secure by default</h3>
+          <p>Forms use CSRF protection and safe input handling to keep sensitive communication secure.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section py-5">
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-6 reveal-left">
+        <div class="card-hd p-4">
+          <span class="section-subtitle">Process</span>
+          <h2 class="section-title">How help arrives</h2>
+          <div class="process-list mt-4">
+            <div class="process-step-item">
+              <div class="process-num">1</div>
+              <div><strong>Submit:</strong> Customers send requests with a simple, guided form.</div>
+            </div>
+            <div class="process-step-item">
+              <div class="process-num">2</div>
+              <div><strong>Analyze:</strong> AI evaluates tone and priority automatically using sentiment scoring.</div>
+            </div>
+            <div class="process-step-item">
+              <div class="process-num">3</div>
+              <div><strong>Route:</strong> Tickets move to the right team without manual handoff or delays.</div>
+            </div>
+            <div class="process-step-item">
+              <div class="process-num">4</div>
+              <div><strong>Resolve:</strong> Transparent status updates keep everyone aligned until closure.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 reveal-right">
+        <div class="card-hd p-4">
+          <span class="section-subtitle">Overview</span>
+          <h2 class="section-title">Built for product and support teams</h2>
+          <p class="mt-3">This platform blends customer-facing support, admin management, and analytics in one responsive system. It's designed for small teams that want a strong online presence with secure control over content, events, and messages.</p>
+          <div class="d-flex flex-wrap gap-2 mt-4">
+            <div class="service-pill">Services</div>
+            <div class="service-pill">Events</div>
+            <div class="service-pill">Blog & Gallery</div>
+            <div class="service-pill">Contact management</div>
+            <div class="service-pill">AI Triage</div>
+            <div class="service-pill">Analytics</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section py-5">
+    <div class="card-hd p-4 cta-shimmer reveal">
+      <div class="row align-items-center gy-4">
+        <div class="col-lg-8">
+          <span class="section-subtitle">Ready to get started?</span>
+          <h2 class="section-title">Turn customer help into a smoother experience today.</h2>
+          <p>Use the ticket form or launch the virtual assistant for fast support — everything is designed to work across desktop, tablet, and mobile.</p>
+        </div>
+        <div class="col-lg-4 d-flex flex-column flex-lg-row gap-3 justify-content-lg-end">
+          <a href="/submit" class="btn-teal">Submit a Ticket</a>
+          <a href="/assistant" class="btn-ghost">Open Assistant</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ── Typing effect ── */
+(function () {
+  const phrases = [' modern teams.', ' growing businesses.', ' product teams.', ' fast-moving startups.'];
+  const el = document.getElementById('typed-word');
+  if (!el) return;
+  let pi = 0, ci = 0, deleting = false;
+  function tick() {
+    const phrase = phrases[pi];
+    if (deleting) {
+      el.textContent = phrase.slice(0, --ci);
+      if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; setTimeout(tick, 450); return; }
+      setTimeout(tick, 50);
+    } else {
+      el.textContent = phrase.slice(0, ++ci);
+      if (ci === phrase.length) { deleting = true; setTimeout(tick, 1800); return; }
+      setTimeout(tick, 80);
+    }
+  }
+  setTimeout(tick, 1200);
+})();
+
+/* ── IntersectionObserver for scroll reveals ── */
+(function () {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => io.observe(el));
+
+  /* process steps */
+  const stepIO = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); stepIO.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.process-step-item').forEach(el => stepIO.observe(el));
+
+  /* animated counters in stats strip */
+  const numEls = document.querySelectorAll('.stats-strip-num[data-target]');
+  const counterIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = +el.dataset.target;
+      const dur = 1600;
+      const start = performance.now();
+      function step(now) {
+        const p = Math.min((now - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(ease * target).toLocaleString();
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+      counterIO.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  numEls.forEach(el => counterIO.observe(el));
+})();
+</script>
 {% endblock %}

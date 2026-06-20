@@ -3,69 +3,288 @@
 {% block title %}About Us - {{ site_name }}{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <section class="about-hero mb-5">
-        <div class="row align-items-center gy-5">
-            <div class="col-lg-6">
-                <div class="card-hd p-4">
-                    <span class="section-subtitle">About Us</span>
-                    <h1 class="section-title">We build better support with AI, insight, and real workflow control.</h1>
-                    <p class="about-copy mt-4">{{ site_name }} combines intelligent ticket triage, sentiment analysis, and admin operations in a single, easy-to-use platform. Our mission is to make customer support faster, more transparent, and more effective for growing teams.</p>
-                    <ul class="about-list mt-4">
-                        <li><strong>AI-driven prioritization</strong> for faster response to urgent requests.</li>
-                        <li><strong>Unified management</strong> for services, events, blogs, and customer contacts.</li>
-                        <li><strong>Secure, responsive design</strong> for desktop and mobile users.</li>
-                    </ul>
-                    <div class="d-flex flex-wrap gap-3 mt-4">
-                        <a href="/contact" class="btn-ghost">Contact Us</a>
-                        <a href="/services" class="btn-teal">View Services</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="about-box-grid">
-                    <div class="about-box about-box--accent">
-                        <h3>Virtual Assistant</h3>
-                        <p>Conversational guidance for submitting tickets and finding support quickly.</p>
-                    </div>
-                    <div class="about-box">
-                        <h3>Service Portfolio</h3>
-                        <p>Clear presentation of software solutions and service offerings.</p>
-                    </div>
-                    <div class="about-box">
-                        <h3>Events Timeline</h3>
-                        <p>Track milestones, launches, and announcements with a visual timeline.</p>
-                    </div>
-                    <div class="about-box">
-                        <h3>Feedback Hub</h3>
-                        <p>Collect and showcase customer reviews, ratings, and testimonials.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<style>
+/* ── Scroll reveals ── */
+.reveal { opacity:0; transform:translateY(36px); transition:opacity 0.6s ease,transform 0.6s ease; }
+.reveal.visible { opacity:1; transform:none; }
+.reveal-left  { opacity:0; transform:translateX(-44px); transition:opacity 0.65s ease,transform 0.65s ease; }
+.reveal-left.visible  { opacity:1; transform:none; }
+.reveal-right { opacity:0; transform:translateX(44px); transition:opacity 0.65s ease,transform 0.65s ease; }
+.reveal-right.visible { opacity:1; transform:none; }
 
-    <section class="about-stats py-4">
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="stat-card c-teal">
-                    <div class="stat-label">Satisfied customers</div>
-                    <div class="stat-value">98%</div>
-                </div>
+/* ── Hero orbs ── */
+.about-hero-wrap { position:relative; overflow:hidden; padding: 4rem 0 2rem; }
+.a-orb { position:absolute; border-radius:50%; filter:blur(90px); opacity:0.14; pointer-events:none; }
+.a-orb-1 { width:460px; height:460px; background:radial-gradient(circle,#2563eb,transparent); top:-80px; right:-100px; animation:aorb 10s ease-in-out infinite alternate; }
+.a-orb-2 { width:300px; height:300px; background:radial-gradient(circle,#60a5fa,transparent); bottom:-60px; left:-40px; animation:aorb 14s ease-in-out infinite alternate-reverse; }
+@keyframes aorb { from{transform:translate(0,0);} to{transform:translate(20px,15px);} }
+
+/* ── About boxes ── */
+.about-box-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.about-box {
+  background:var(--navy-mid); border:1px solid var(--border); border-radius:12px;
+  padding:1.4rem; transition:transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  opacity:0; transform:scale(0.93) translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s, border-color 0.3s;
+}
+.about-box.visible { opacity:1; transform:scale(1) translateY(0); }
+.about-box:nth-child(1) { transition-delay:0s; }
+.about-box:nth-child(2) { transition-delay:0.1s; }
+.about-box:nth-child(3) { transition-delay:0.2s; }
+.about-box:nth-child(4) { transition-delay:0.3s; }
+.about-box:hover { transform:translateY(-5px) scale(1.02); box-shadow:0 8px 32px rgba(37,99,235,0.2); border-color:var(--teal); }
+.about-box--accent { border-color:var(--teal); background:rgba(37,99,235,0.1); }
+.about-box h3 { font-size:1rem; font-weight:700; margin-bottom:0.4rem; color:#fff; }
+.about-box p  { font-size:0.86rem; color:var(--text-muted); margin:0; }
+
+/* ── Stat cards ── */
+.stat-card {
+  border-radius:14px; padding:1.6rem; text-align:center; position:relative; overflow:hidden;
+  opacity:0; transform:translateY(24px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.stat-card.visible { opacity:1; transform:none; }
+.stat-card::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,0.04) 50%,transparent 80%);
+  transform:translateX(-100%); animation:shimmer 3s ease infinite;
+}
+@keyframes shimmer { to{transform:translateX(100%);} }
+
+/* ── Values section ── */
+.values-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-top:1.5rem; }
+@media(max-width:768px) { .values-grid{grid-template-columns:1fr 1fr;} .about-box-grid{grid-template-columns:1fr;} }
+@media(max-width:480px) { .values-grid{grid-template-columns:1fr;} }
+.value-item {
+  background:var(--navy-mid); border:1px solid var(--border); border-radius:12px;
+  padding:1.4rem; text-align:center;
+  opacity:0; transform:translateY(20px);
+  transition:opacity 0.5s ease, transform 0.5s ease, border-color 0.3s, box-shadow 0.3s;
+}
+.value-item.visible { opacity:1; transform:none; }
+.value-item:hover { border-color:var(--teal); box-shadow:0 4px 24px rgba(37,99,235,0.15); }
+.value-icon { font-size:2rem; margin-bottom:0.6rem; display:block; }
+.value-title { font-weight:700; color:#fff; margin-bottom:0.3rem; }
+.value-desc { font-size:0.83rem; color:var(--text-muted); }
+
+/* ── Team section ── */
+.team-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:1.5rem; }
+@media(max-width:900px){.team-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.team-grid{grid-template-columns:1fr 1fr;}}
+.team-card {
+  background:var(--navy-mid); border:1px solid var(--border); border-radius:14px;
+  padding:1.5rem 1rem; text-align:center;
+  opacity:0; transform:translateY(24px) scale(0.95);
+  transition:opacity 0.5s ease, transform 0.5s ease, border-color 0.3s;
+}
+.team-card.visible { opacity:1; transform:none; }
+.team-card:hover { border-color:var(--teal); transform:translateY(-4px); }
+.team-avatar {
+  width:60px; height:60px; border-radius:50%; margin:0 auto 0.8rem;
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));
+  display:grid; place-items:center; font-size:1.4rem; font-weight:700; color:#fff;
+}
+.team-name  { font-weight:700; font-size:0.92rem; color:#fff; }
+.team-role  { font-size:0.78rem; color:var(--teal-light); margin-top:0.2rem; }
+
+/* About copy list */
+.about-list { list-style:none; padding:0; margin:0; }
+.about-list li { display:flex; align-items:flex-start; gap:0.6rem; padding:0.5rem 0; border-bottom:1px solid var(--border); }
+.about-list li:last-child { border-bottom:none; }
+.about-list li::before { content:'→'; color:var(--teal); font-weight:700; flex-shrink:0; margin-top:1px; }
+</style>
+
+<div class="about-hero-wrap">
+  <div class="a-orb a-orb-1"></div>
+  <div class="a-orb a-orb-2"></div>
+
+  <div class="container">
+    <section class="mb-5">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-6 reveal-left">
+          <div class="card-hd p-4">
+            <span class="section-subtitle">About Us</span>
+            <h1 class="section-title">We build better support with AI, insight, and real workflow control.</h1>
+            <p class="about-copy mt-4">{{ site_name }} combines intelligent ticket triage, sentiment analysis, and admin operations in a single, easy-to-use platform. Our mission is to make customer support faster, more transparent, and more effective for growing teams.</p>
+            <ul class="about-list mt-4">
+              <li><strong>AI-driven prioritization</strong> for faster response to urgent requests.</li>
+              <li><strong>Unified management</strong> for services, events, blogs, and customer contacts.</li>
+              <li><strong>Secure, responsive design</strong> for desktop and mobile users.</li>
+              <li><strong>Real-time analytics</strong> for teams to monitor trends and performance.</li>
+            </ul>
+            <div class="d-flex flex-wrap gap-3 mt-4">
+              <a href="/contact" class="btn-ghost">Contact Us</a>
+              <a href="/services" class="btn-teal">View Services</a>
             </div>
-            <div class="col-md-4">
-                <div class="stat-card c-amber">
-                    <div class="stat-label">Fast ticket review</div>
-                    <div class="stat-value">2 min</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card c-success">
-                    <div class="stat-label">Platform uptime</div>
-                    <div class="stat-value">99.9%</div>
-                </div>
-            </div>
+          </div>
         </div>
+        <div class="col-lg-6 reveal-right">
+          <div class="about-box-grid">
+            <div class="about-box about-box--accent">
+              <h3>🤖 Virtual Assistant</h3>
+              <p>Conversational guidance for submitting tickets and finding support quickly.</p>
+            </div>
+            <div class="about-box">
+              <h3>🧩 Service Portfolio</h3>
+              <p>Clear presentation of software solutions and service offerings.</p>
+            </div>
+            <div class="about-box">
+              <h3>📅 Events Timeline</h3>
+              <p>Track milestones, launches, and announcements with a visual timeline.</p>
+            </div>
+            <div class="about-box">
+              <h3>⭐ Feedback Hub</h3>
+              <p>Collect and showcase customer reviews, ratings, and testimonials.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
+  </div>
 </div>
+
+<div class="container">
+
+  <!-- Stats -->
+  <section class="py-4">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="stat-card c-teal">
+          <div class="stat-label">Satisfied customers</div>
+          <div class="stat-value" data-target="98" data-suffix="%">0%</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card c-amber">
+          <div class="stat-label">Avg. ticket review</div>
+          <div class="stat-value">2 min</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card c-success">
+          <div class="stat-label">Platform uptime</div>
+          <div class="stat-value" data-target="99" data-suffix=".9%">0%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Values -->
+  <section class="py-5">
+    <div class="text-center reveal">
+      <p class="section-subtitle">Our Values</p>
+      <h2 class="section-title">What drives us forward</h2>
+    </div>
+    <div class="values-grid">
+      <div class="value-item">
+        <span class="value-icon">🚀</span>
+        <div class="value-title">Speed</div>
+        <p class="value-desc">We believe no customer should wait. Every feature is built to accelerate resolution.</p>
+      </div>
+      <div class="value-item">
+        <span class="value-icon">🔍</span>
+        <div class="value-title">Clarity</div>
+        <p class="value-desc">Transparent ticket tracking and honest communication build lasting customer trust.</p>
+      </div>
+      <div class="value-item">
+        <span class="value-icon">🛡️</span>
+        <div class="value-title">Security</div>
+        <p class="value-desc">OWASP-aligned by default — CSRF, XSS protection, and secure session handling built in.</p>
+      </div>
+      <div class="value-item">
+        <span class="value-icon">🤝</span>
+        <div class="value-title">Partnership</div>
+        <p class="value-desc">We treat every customer as a long-term partner, not a ticket number.</p>
+      </div>
+      <div class="value-item">
+        <span class="value-icon">📈</span>
+        <div class="value-title">Growth</div>
+        <p class="value-desc">Built to scale — from startup to enterprise without changing platforms.</p>
+      </div>
+      <div class="value-item">
+        <span class="value-icon">🧠</span>
+        <div class="value-title">Intelligence</div>
+        <p class="value-desc">AI-powered decisions that improve support quality with every ticket resolved.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="py-5">
+    <div class="text-center reveal">
+      <p class="section-subtitle">Our Team</p>
+      <h2 class="section-title">The people behind the platform</h2>
+    </div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">JA</div>
+        <div class="team-name">Jordan Alvarez</div>
+        <div class="team-role">CEO & Co-Founder</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">SK</div>
+        <div class="team-name">Sofia Kim</div>
+        <div class="team-role">CTO & Co-Founder</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">MP</div>
+        <div class="team-name">Marcus Patel</div>
+        <div class="team-role">Head of AI Research</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">LN</div>
+        <div class="team-name">Lena Nakamura</div>
+        <div class="team-role">Lead UX Designer</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="pb-5">
+    <div class="card-hd p-4 reveal" style="text-align:center; background:linear-gradient(135deg,rgba(37,99,235,0.12),rgba(96,165,250,0.06)); border-color:rgba(37,99,235,0.3);">
+      <p class="section-subtitle">Join us</p>
+      <h2 class="section-title">Ready to upgrade your customer support?</h2>
+      <p class="hero-copy mx-auto" style="max-width:560px;">Explore our services or get in touch — we'd love to show you what AI-powered helpdesk looks like in action.</p>
+      <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+        <a href="/services" class="btn-teal">Explore Services</a>
+        <a href="/contact" class="btn-ghost">Get in Touch</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }});
+  }, {threshold:0.1});
+
+  document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.about-box,.value-item,.team-card,.stat-card').forEach(el => io.observe(el));
+
+  /* animated counters */
+  document.querySelectorAll('.stat-value[data-target]').forEach(el => {
+    const target = +el.dataset.target;
+    const suffix = el.dataset.suffix || '';
+    const cio = new IntersectionObserver(entries => {
+      if(!entries[0].isIntersecting) return;
+      const start = performance.now();
+      const dur = 1400;
+      (function step(now){
+        const p = Math.min((now-start)/dur,1);
+        const ease = 1-Math.pow(1-p,3);
+        el.textContent = Math.round(ease*target) + suffix;
+        if(p<1) requestAnimationFrame(step);
+      })(start);
+      cio.unobserve(el);
+    }, {threshold:0.5});
+    cio.observe(el);
+  });
+
+  /* team card stagger */
+  document.querySelectorAll('.team-card').forEach((el,i) => { el.style.transitionDelay = (i*0.08)+'s'; });
+  /* value item stagger */
+  document.querySelectorAll('.value-item').forEach((el,i) => { el.style.transitionDelay = (i*0.07)+'s'; });
+})();
+</script>
 {% endblock %}

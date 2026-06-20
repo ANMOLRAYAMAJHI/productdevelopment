@@ -1,64 +1,480 @@
 {% extends 'base.html' %}
+{% block title %}Our Journey — Events Timeline · {{ site_name }}{% endblock %}
 
-{% block title %}Events - {{ site_name }}{% endblock %}
+{% block extra_css %}
+<style>
+/* ─── EVENTS PAGE ─────────────────────────────────────── */
+.events-page { padding-bottom: 5rem; }
+
+/* Hero */
+.events-hero {
+    text-align: center;
+    padding: 3.5rem 0 3rem;
+    position: relative;
+}
+.events-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 320px;
+    background: radial-gradient(ellipse, rgba(37,99,235,0.14) 0%, transparent 70%);
+    pointer-events: none;
+}
+.events-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(37,99,235,0.1);
+    border: 1px solid rgba(37,99,235,0.25);
+    border-radius: 999px;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #60a5fa;
+    margin-bottom: 1.3rem;
+}
+.events-hero-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+}
+.events-hero-sub {
+    color: var(--text-muted);
+    max-width: 540px;
+    margin: 0 auto;
+    font-size: 1rem;
+    line-height: 1.75;
+}
+
+/* Counter Strip */
+.events-counters {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    margin-bottom: 4.5rem;
+    overflow: hidden;
+}
+.counter-item {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 1.6rem 1rem;
+    border-right: 1px solid var(--border);
+    position: relative;
+}
+.counter-item:last-child { border-right: none; }
+.counter-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(37,99,235,0.6), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+.counter-item:hover::before { opacity: 1; }
+.counter-val {
+    font-family: 'Fraunces', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #60a5fa;
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.35rem;
+}
+.counter-lbl {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* ─── TIMELINE TRACK ──────────────────────────────────── */
+.timeline-track {
+    position: relative;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 0 3rem;
+}
+
+/* Central glowing spine */
+.tl-spine {
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    width: 2px;
+    transform: translateX(-50%);
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(37,99,235,0.9) 6%,
+        rgba(59,130,246,0.4) 88%,
+        transparent 100%
+    );
+    z-index: 0;
+}
+.tl-spine::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 10px;
+    left: -4px;
+    background: inherit;
+    filter: blur(6px);
+    opacity: 0.4;
+}
+
+/* Year marker */
+.tl-year {
+    text-align: center;
+    margin: 3.5rem 0 2rem;
+    position: relative;
+    z-index: 5;
+}
+.tl-year-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: #fff;
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.45rem 1.6rem;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.15), 0 0 24px rgba(37,99,235,0.3);
+}
+
+/* ─── SINGLE EVENT ─────────────────────────────────────── */
+.tl-event {
+    display: grid;
+    grid-template-columns: 1fr 72px 1fr;
+    margin-bottom: 2.8rem;
+    position: relative;
+    z-index: 1;
+    align-items: start;
+}
+
+/* Motion wrapper — handles slide-in, no conflict with hover */
+.tl-motion {
+    opacity: 0;
+    transition: opacity 0.65s cubic-bezier(0.16,1,0.3,1),
+                transform 0.65s cubic-bezier(0.16,1,0.3,1);
+}
+.tl-event--left  .tl-motion { transform: translateX(-40px); }
+.tl-event--right .tl-motion { transform: translateX(40px);  }
+.tl-event.tl-visible .tl-motion {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Card */
+.tl-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.5rem 1.6rem;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    cursor: default;
+}
+.tl-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 24px 56px rgba(0,0,0,0.22), 0 0 0 1px rgba(37,99,235,0.25);
+    border-color: rgba(37,99,235,0.35);
+}
+
+/* Arrow pointer toward center */
+.tl-event--left  .tl-card { position: relative; }
+.tl-event--left  .tl-card::after {
+    content: '';
+    position: absolute;
+    top: 2.1rem; right: -9px;
+    border: 9px solid transparent;
+    border-left-color: rgba(37,99,235,0.25);
+}
+.tl-event--right .tl-card::after {
+    content: '';
+    position: absolute;
+    top: 2.1rem; left: -9px;
+    border: 9px solid transparent;
+    border-right-color: rgba(37,99,235,0.25);
+}
+
+.tl-card-icon {
+    font-size: 1.6rem;
+    display: block;
+    margin-bottom: 0.75rem;
+    filter: drop-shadow(0 2px 6px rgba(37,99,235,0.4));
+}
+.tl-card-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #60a5fa;
+    background: rgba(37,99,235,0.1);
+    border: 1px solid rgba(37,99,235,0.2);
+    border-radius: 6px;
+    padding: 0.22em 0.7em;
+    margin-bottom: 0.7rem;
+}
+.tl-card-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+.tl-card h2 {
+    font-size: 1.12rem;
+    margin-bottom: 0.6rem;
+    color: var(--text-main);
+    line-height: 1.35;
+}
+.tl-card p {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.75;
+    margin: 0;
+}
+
+/* Center column — dot */
+.tl-center {
+    display: flex;
+    justify-content: center;
+    padding-top: 2rem;
+    position: relative;
+    z-index: 2;
+}
+.tl-center-inner { position: relative; display: inline-block; }
+.tl-dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1d4ed8, #60a5fa);
+    border: 3px solid var(--navy);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.5);
+    position: relative;
+    z-index: 3;
+    transition: box-shadow 0.3s;
+}
+.tl-event:hover .tl-dot {
+    box-shadow: 0 0 0 7px rgba(37,99,235,0.15), 0 0 22px rgba(37,99,235,0.5);
+}
+.tl-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(37,99,235,0.35);
+    animation: tl-ring-out 2.5s ease-out infinite;
+    pointer-events: none;
+}
+.tl-ring-1 { top: -7px; left: -7px; width: 36px; height: 36px; }
+.tl-ring-2 { top: -7px; left: -7px; width: 36px; height: 36px; animation-delay: 1.25s; border-color: rgba(59,130,246,0.2); }
+@keyframes tl-ring-out {
+    0%   { transform: scale(0.5); opacity: 0.8; }
+    100% { transform: scale(2);   opacity: 0; }
+}
+
+/* Grid column placement */
+.tl-event--left  .tl-motion  { grid-column: 1; }
+.tl-event--left  .tl-center  { grid-column: 2; }
+.tl-event--left  .tl-spacer  { grid-column: 3; }
+.tl-event--right .tl-spacer  { grid-column: 1; }
+.tl-event--right .tl-center  { grid-column: 2; }
+.tl-event--right .tl-motion  { grid-column: 3; }
+
+.tl-spacer { /* intentionally empty */ }
+
+/* Center delay */
+.tl-center {
+    opacity: 0;
+    transform: scale(0.4);
+    transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
+}
+.tl-event.tl-visible .tl-center {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ─── MOBILE ────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .tl-event {
+        display: block;
+        padding-left: 3.2rem;
+        margin-bottom: 2rem;
+    }
+    .tl-spine  { left: 11px; }
+    .tl-center {
+        position: absolute;
+        left: 0; top: 1.5rem;
+        padding: 0;
+        transform: scale(0.4);
+    }
+    .tl-event.tl-visible .tl-center { transform: scale(1); }
+    .tl-spacer { display: none; }
+    .tl-event--left  .tl-card::after,
+    .tl-event--right .tl-card::after { display: none; }
+    .tl-event--left  .tl-motion,
+    .tl-event--right .tl-motion { grid-column: unset; }
+    .events-counters { border-radius: 14px; }
+    .counter-item { border-right: none; border-bottom: 1px solid var(--border); }
+    .counter-item:last-child { border-bottom: none; }
+}
+@media (max-width: 480px) {
+    .events-hero-title { font-size: 2rem; }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container" style="padding-top:2.5rem;">
-    <div class="text-center mb-5">
-        <p style="font-size:0.75rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); margin-bottom:0.6rem;">Events Timeline</p>
-        <h1 class="section-title" style="font-size:2.5rem;">Our journey in milestones.</h1>
-        <p style="color:var(--text-muted); max-width:680px; margin:1rem auto;">Review key updates, launches, and achievements as we grow.</p>
+<div class="events-page">
+<div class="container">
+
+    <!-- ── HERO ── -->
+    <section class="events-hero">
+        <div class="events-eyebrow">📅 Our Timeline</div>
+        <h1 class="events-hero-title">Building the future,<br>one milestone at a time.</h1>
+        <p class="events-hero-sub">From founding day to global scale — explore the key moments that shaped {{ site_name }} into what it is today.</p>
+    </section>
+
+    <!-- ── COUNTERS ── -->
+    <div class="events-counters">
+        <div class="counter-item">
+            <span class="counter-val" data-target="{{ timeline|length if timeline else 11 }}">0</span>
+            <span class="counter-lbl">Milestones</span>
+        </div>
+        <div class="counter-item">
+            <span class="counter-val" data-target="3">0</span>
+            <span class="counter-lbl">Years Active</span>
+        </div>
+        <div class="counter-item">
+            <span class="counter-val" data-target="10000">0</span>
+            <span class="counter-lbl">Users Reached</span>
+        </div>
+        <div class="counter-item">
+            <span class="counter-val" data-target="34">0</span>
+            <span class="counter-lbl">Countries</span>
+        </div>
     </div>
 
-    {% if not timeline %}
-        {% set timeline = [
-            {
-                'event_date_str': 'Jan 15, 2024',
-                'title': 'Company Founded',
-                'description': 'We officially launched with a small team and a big vision for the industry.'
-            },
-            {
-                'event_date_str': 'Apr 02, 2024',
-                'title': 'First Product Release',
-                'description': 'Shipped our first product to early customers and gathered valuable feedback.'
-            },
-            {
-                'event_date_str': 'Aug 20, 2024',
-                'title': 'Series A Funding',
-                'description': 'Secured funding to accelerate growth and expand our core team.'
-            },
-            {
-                'event_date_str': 'Nov 11, 2024',
-                'title': '10,000 Users Milestone',
-                'description': 'Crossed ten thousand active users, a major validation of our direction.'
-            },
-            {
-                'event_date_str': 'Mar 05, 2025',
-                'title': 'New Office Opening',
-                'description': 'Opened our new headquarters to support a growing, distributed team.'
-            }
-        ] %}
-    {% endif %}
+    <!-- ── TIMELINE ── -->
+    <div class="timeline-track">
+        <div class="tl-spine"></div>
 
-    <div class="card-hd" style="padding:2rem;">
         {% if timeline %}
-            <div class="timeline-list">
-                {% for item in timeline %}
-                <div class="timeline-item" style="margin-bottom:2rem;">
-                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:0.75rem;">
-                        <div style="width:14px; height:14px; border-radius:50%; background:var(--teal);"></div>
-                        <div style="font-size:0.95rem; font-weight:700; color:var(--text-main);">
-                            {% if item.event_date %}{{ item.event_date.strftime('%b %d, %Y') }}{% else %}{{ item.event_date_str }}{% endif %}
+            {% set ns = namespace(cur_year=None) %}
+            {% set icons = ['🚀','💰','🧪','⚡','👥','📈','🤖','🏢','🌍','🏆','🎯','🔐','🎉'] %}
+            {% set tags  = ['Launch','Funding','Beta','Release','Milestone','Growth','AI Feature','Expansion','Global','Award','Strategy','Security','Celebration'] %}
+
+            {% for item in timeline %}
+                {% set yr = item.event_date.year %}
+                {% if yr != ns.cur_year %}
+                    {% set ns.cur_year = yr %}
+                    <div class="tl-year">
+                        <span class="tl-year-badge">{{ yr }}</span>
+                    </div>
+                {% endif %}
+
+                {% set side = 'left' if loop.index is odd else 'right' %}
+                {% set idx  = loop.index0 % (icons|length) %}
+
+                <div class="tl-event tl-event--{{ side }}">
+                    <!-- Card wrapped in motion div -->
+                    <div class="tl-motion">
+                        <div class="tl-card">
+                            <span class="tl-card-icon">{{ icons[idx] }}</span>
+                            <div class="tl-card-date">{{ item.event_date.strftime('%B %d, %Y') }}</div>
+                            <span class="tl-card-tag">{{ tags[idx] }}</span>
+                            <h2>{{ item.title }}</h2>
+                            <p>{{ item.description }}</p>
                         </div>
                     </div>
-                    <h2 style="font-size:1.2rem; margin-bottom:0.6rem;">{{ item.title }}</h2>
-                    <p style="color:var(--text-muted); line-height:1.75;">{{ item.description }}</p>
+                    <!-- Center dot -->
+                    <div class="tl-center">
+                        <div class="tl-center-inner">
+                            <div class="tl-dot"></div>
+                            <div class="tl-ring tl-ring-1"></div>
+                            <div class="tl-ring tl-ring-2"></div>
+                        </div>
+                    </div>
+                    <div class="tl-spacer"></div>
                 </div>
-                {% endfor %}
-            </div>
+            {% endfor %}
+
         {% else %}
-            <div class="text-center" style="padding:3rem 0; color:var(--text-muted);">No events are available yet.</div>
+            <div class="text-center" style="padding:5rem 0; color:var(--text-muted);">
+                <p style="font-size:3.5rem; margin-bottom:1.2rem;">📅</p>
+                <p style="font-size:1.1rem;">No events yet — our journey is just beginning.</p>
+            </div>
         {% endif %}
     </div>
+
 </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    /* ── SCROLL-REVEAL ── */
+    if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('tl-visible');
+                    io.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.12 });
+
+        document.querySelectorAll('.tl-event').forEach(el => io.observe(el));
+
+        /* Trigger visible ones already in viewport */
+        setTimeout(() => {
+            document.querySelectorAll('.tl-event').forEach(el => {
+                const r = el.getBoundingClientRect();
+                if (r.top < window.innerHeight * 0.9) el.classList.add('tl-visible');
+            });
+        }, 100);
+    } else {
+        document.querySelectorAll('.tl-event').forEach(el => el.classList.add('tl-visible'));
+    }
+
+    /* ── ANIMATED COUNTERS ── */
+    function animCount(el, target, duration) {
+        const start = performance.now();
+        const big = target >= 1000;
+        (function tick(now) {
+            const t = Math.min((now - start) / duration, 1);
+            const ease = 1 - Math.pow(1 - t, 3);
+            const val = Math.round(ease * target);
+            el.textContent = big ? val.toLocaleString() : val;
+            if (t < 1) requestAnimationFrame(tick);
+        }(performance.now()));
+    }
+
+    const cio = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                animCount(e.target, parseInt(e.target.dataset.target), 1400);
+                cio.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-target]').forEach(el => cio.observe(el));
+})();
+</script>
 {% endblock %}

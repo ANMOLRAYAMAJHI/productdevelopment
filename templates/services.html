@@ -3,34 +3,197 @@
 {% block title %}Services - {{ site_name }}{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="text-center mb-5">
-        <p class="section-subtitle">Our Software Solutions</p>
-        <h1 class="section-title">Solutions built to scale your business.</h1>
-        <p class="hero-copy mx-auto" style="max-width:720px;">From support automation to service portfolios, {{ site_name }} helps teams deliver better customer experiences with clarity and speed.</p>
-    </div>
+<style>
+/* ── Reveal ── */
+.reveal { opacity:0; transform:translateY(32px); transition:opacity 0.55s ease,transform 0.55s ease; }
+.reveal.visible { opacity:1; transform:none; }
 
-    <div class="row g-4">
-        {% if services %}
-            {% for service in services %}
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card card-hd h-100">
-                    <div class="service-card-head">
-                        <div class="service-icon">{{ service.icon or '🧩' }}</div>
-                        <h2>{{ service.title }}</h2>
-                    </div>
-                    <p>{{ service.description }}</p>
-                    <div class="service-meta">Available now</div>
-                </div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <div class="col-12">
-                <div class="card-hd text-center" style="padding:3rem;">
-                    <p style="margin:0; color:var(--text-muted);">No services are available yet. Please check back soon.</p>
-                </div>
-            </div>
-        {% endif %}
+/* ── Hero orb ── */
+.svc-hero { position:relative; overflow:hidden; padding:4.5rem 0 2rem; }
+.svc-orb { position:absolute; border-radius:50%; filter:blur(100px); opacity:0.13; pointer-events:none; }
+.svc-orb-1 { width:500px;height:500px;background:radial-gradient(circle,#2563eb,transparent);top:-140px;right:-80px;animation:sorb 11s ease-in-out infinite alternate; }
+.svc-orb-2 { width:300px;height:300px;background:radial-gradient(circle,#60a5fa,transparent);bottom:-80px;left:-40px;animation:sorb 15s ease-in-out infinite alternate-reverse; }
+@keyframes sorb{from{transform:translate(0,0);}to{transform:translate(18px,12px);}}
+
+/* ── Service cards with 3D tilt ── */
+.service-card {
+  position:relative; overflow:hidden; border-radius:16px; padding:2rem 1.6rem;
+  background:var(--navy-mid); border:1px solid var(--border);
+  transition:border-color 0.3s, box-shadow 0.3s, transform 0.15s;
+  transform-style:preserve-3d; cursor:default; will-change:transform;
+  opacity:0; transform:translateY(30px) scale(0.97);
+}
+.service-card.visible { opacity:1; transform:translateY(0) scale(1); }
+.service-card::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(37,99,235,0.06) 0%,transparent 60%);
+  opacity:0; transition:opacity 0.3s;
+}
+.service-card:hover::before { opacity:1; }
+.service-card:hover { border-color:var(--teal); box-shadow:0 12px 40px rgba(37,99,235,0.22); }
+.service-card-head { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; }
+.service-icon {
+  font-size:2rem; width:54px; height:54px; border-radius:14px;
+  background:rgba(37,99,235,0.15); border:1px solid rgba(37,99,235,0.3);
+  display:grid; place-items:center; flex-shrink:0;
+  transition:transform 0.3s, background 0.3s;
+}
+.service-card:hover .service-icon { transform:scale(1.15) rotate(-6deg); background:rgba(37,99,235,0.28); }
+.service-card h2 { font-size:1.05rem; font-weight:700; color:#fff; margin:0; }
+.service-card p { color:var(--text-muted); font-size:0.87rem; line-height:1.7; margin:0 0 1rem; }
+.service-meta {
+  display:inline-flex; align-items:center; gap:0.4rem;
+  font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--teal-light); background:rgba(37,99,235,0.12); border-radius:20px; padding:0.3rem 0.75rem;
+}
+.service-meta::before { content:'●'; font-size:0.6rem; color:#22c55e; }
+
+/* ── Category filter pills ── */
+.filter-strip { display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center; margin-bottom:2.5rem; }
+.filter-btn {
+  padding:0.45rem 1.1rem; border-radius:20px; border:1px solid var(--border);
+  background:transparent; color:var(--text-muted); font-size:0.83rem; font-weight:600;
+  cursor:pointer; transition:all 0.2s;
+}
+.filter-btn:hover, .filter-btn.active {
+  background:rgba(37,99,235,0.18); border-color:var(--teal); color:var(--teal-light);
+}
+
+/* ── CTA section ── */
+.svc-cta {
+  background:linear-gradient(135deg,rgba(37,99,235,0.12),rgba(96,165,250,0.06));
+  border:1px solid rgba(37,99,235,0.25); border-radius:16px; padding:3rem 2rem; text-align:center;
+  margin:3rem 0; position:relative; overflow:hidden;
+}
+.svc-cta::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(110deg,transparent 20%,rgba(37,99,235,0.06) 50%,transparent 80%);
+  animation:shimmer 3.5s ease infinite;
+}
+@keyframes shimmer{to{transform:translateX(100%);}}
+</style>
+
+<div class="svc-hero">
+  <div class="svc-orb svc-orb-1"></div>
+  <div class="svc-orb svc-orb-2"></div>
+  <div class="container">
+    <div class="text-center reveal">
+      <p class="section-subtitle">Our Software Solutions</p>
+      <h1 class="section-title">Solutions built to scale your business.</h1>
+      <p class="hero-copy mx-auto" style="max-width:720px;">From support automation to service portfolios, {{ site_name }} helps teams deliver better customer experiences with clarity and speed.</p>
     </div>
+  </div>
 </div>
+
+<div class="container pb-5">
+
+  <div class="filter-strip reveal">
+    <button class="filter-btn active" data-filter="all">All Services</button>
+    <button class="filter-btn" data-filter="ai">AI & Automation</button>
+    <button class="filter-btn" data-filter="content">Content & CMS</button>
+    <button class="filter-btn" data-filter="security">Security</button>
+  </div>
+
+  <div class="row g-4" id="services-grid">
+    {% if services %}
+      {% set ai_services = ['AI Ticket Management','Virtual Assistant','Analytics Dashboard'] %}
+      {% set content_services = ['Service Portfolio CMS','Events & Milestones Timeline','Photo Gallery & Blog','Customer Feedback Hub','Contact & Inquiry Management'] %}
+      {% set security_services = ['Enterprise Security Suite'] %}
+      {% for service in services %}
+      {% if service.title in ai_services %}{% set cat = 'ai' %}{% elif service.title in security_services %}{% set cat = 'security' %}{% else %}{% set cat = 'content' %}{% endif %}
+      <div class="col-lg-4 col-md-6 svc-col" data-cat="{{ cat }}">
+        <div class="service-card h-100">
+          <div class="service-card-head">
+            <div class="service-icon">{{ service.icon or '🧩' }}</div>
+            <h2>{{ service.title }}</h2>
+          </div>
+          <p>{{ service.description }}</p>
+          <div class="service-meta">Available now</div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <!-- Fallback static cards -->
+      <div class="col-lg-4 col-md-6 svc-col" data-cat="ai">
+        <div class="service-card h-100">
+          <div class="service-card-head"><div class="service-icon">🎫</div><h2>AI Ticket Management</h2></div>
+          <p>Automatically classify, prioritize, and route incoming support tickets using sentiment analysis.</p>
+          <div class="service-meta">Available now</div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 svc-col" data-cat="ai">
+        <div class="service-card h-100">
+          <div class="service-card-head"><div class="service-icon">🤖</div><h2>Virtual Assistant</h2></div>
+          <p>Deploy a conversational AI widget that guides customers through ticket submission and status checks.</p>
+          <div class="service-meta">Available now</div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 svc-col" data-cat="security">
+        <div class="service-card h-100">
+          <div class="service-card-head"><div class="service-icon">🔐</div><h2>Enterprise Security Suite</h2></div>
+          <p>OWASP-aligned protection including CSRF tokens, rate limiting, and HTTP security headers.</p>
+          <div class="service-meta">Available now</div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="svc-cta reveal">
+    <p class="section-subtitle">Ready to get started?</p>
+    <h2 class="section-title">Let's build something better together.</h2>
+    <p class="hero-copy mx-auto" style="max-width:560px;">Have a question about which service fits your team? Reach out and we'll walk you through it.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+      <a href="/contact" class="btn-teal">Contact Us</a>
+      <a href="/assistant" class="btn-ghost">Ask the Assistant</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* Scroll reveals */
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});
+  },{threshold:0.1});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  /* Staggered card reveal */
+  const cards = document.querySelectorAll('.service-card');
+  const cardIO = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');cardIO.unobserve(e.target);}});
+  },{threshold:0.12});
+  cards.forEach((card,i)=>{
+    card.style.transitionDelay=(i%3*0.1)+'s';
+    cardIO.observe(card);
+  });
+
+  /* 3D tilt on mouse move */
+  cards.forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX-r.left)/r.width-0.5;
+      const y = (e.clientY-r.top)/r.height-0.5;
+      card.style.transform=`perspective(700px) rotateY(${x*10}deg) rotateX(${-y*8}deg) translateY(-4px) scale(1.01)`;
+    });
+    card.addEventListener('mouseleave',()=>{card.style.transform='';});
+  });
+
+  /* Category filter */
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const f=btn.dataset.filter;
+      document.querySelectorAll('.svc-col').forEach(col=>{
+        const show = f==='all' || col.dataset.cat===f;
+        col.style.transition='opacity 0.3s, transform 0.3s';
+        col.style.opacity = show?'1':'0.15';
+        col.style.transform = show?'scale(1)':'scale(0.95)';
+        col.style.pointerEvents = show?'':'none';
+      });
+    });
+  });
+})();
+</script>
 {% endblock %}

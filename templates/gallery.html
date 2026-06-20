@@ -3,64 +3,221 @@
 {% block title %}Gallery - {{ site_name }}{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="text-center mb-5">
-        <p class="section-subtitle">Photo Gallery</p>
-        <h1 class="section-title">A closer look at our work.</h1>
-        <p class="hero-copy mx-auto" style="max-width:720px;">Browse selected gallery photos from product launches, events, and team highlights.</p>
-    </div>
+<style>
+/* ── Reveals ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.55s ease,transform 0.55s ease;}
+.reveal.visible{opacity:1;transform:none;}
 
-    {% if not photos %}
-        {% set photos = [
-            {
-                'image_url': 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
-                'title': 'Product Launch Night',
-                'caption': 'Unveiling our newest release to a packed room.'
-            },
-            {
-                'image_url': 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80',
-                'title': 'Team Offsite',
-                'caption': 'Strategy sessions and team bonding by the coast.'
-            },
-            {
-                'image_url': 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80',
-                'title': 'Conference Keynote',
-                'caption': 'Sharing our roadmap on the main stage.'
-            },
-            {
-                'image_url': 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&q=80',
-                'title': 'Office Culture',
-                'caption': 'A glimpse into our day-to-day workspace.'
-            },
-            {
-                'image_url': 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80',
-                'title': 'Client Workshop',
-                'caption': 'Collaborating with partners on new ideas.'
-            },
-            {
-                'image_url': 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80',
-                'title': 'Behind the Scenes',
-                'caption': 'Our crew prepping for the big event.'
-            }
-        ] %}
-    {% endif %}
+/* ── Hero orbs ── */
+.gal-hero{position:relative;overflow:hidden;padding:4.5rem 0 2rem;}
+.g-orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.13;pointer-events:none;}
+.g-orb-1{width:440px;height:440px;background:radial-gradient(circle,#2563eb,transparent);top:-100px;left:-80px;animation:gorb 12s ease-in-out infinite alternate;}
+.g-orb-2{width:300px;height:300px;background:radial-gradient(circle,#60a5fa,transparent);bottom:-60px;right:-40px;animation:gorb 9s ease-in-out infinite alternate-reverse;}
+@keyframes gorb{from{transform:translate(0,0);}to{transform:translate(20px,14px);}}
 
-    <div class="gallery-grid">
-        {% if photos %}
-            {% for photo in photos %}
-            <div class="gallery-card">
-                <div class="gallery-image" style="background-image:url('{{ photo.image_url }}');"></div>
-                <div class="gallery-body">
-                    <h2>{{ photo.title }}</h2>
-                    <p>{{ photo.caption }}</p>
-                </div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <div class="card-hd text-center" style="padding:3rem; width:100%;">
-                <p style="margin:0; color:var(--text-muted);">Photo gallery content will appear here once uploaded.</p>
-            </div>
-        {% endif %}
-    </div>
+/* ── Filter strip ── */
+.filter-strip{display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem;}
+.filter-btn{padding:0.4rem 1rem;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.filter-btn:hover,.filter-btn.active{background:rgba(37,99,235,0.18);border-color:var(--teal);color:var(--teal-light);}
+
+/* ── Masonry-like gallery grid ── */
+.gallery-masonry{
+  columns:3; column-gap:1rem;
+}
+@media(max-width:900px){.gallery-masonry{columns:2;}}
+@media(max-width:560px){.gallery-masonry{columns:1;}}
+
+.gal-item{
+  break-inside:avoid; margin-bottom:1rem; border-radius:14px; overflow:hidden;
+  position:relative; cursor:pointer; border:1px solid var(--border);
+  opacity:0; transform:scale(0.94) translateY(16px);
+  transition:opacity 0.55s ease, transform 0.55s ease;
+}
+.gal-item.visible{opacity:1;transform:none;}
+.gal-img{
+  width:100%; display:block; aspect-ratio:4/3; object-fit:cover;
+  transition:transform 0.45s ease;
+}
+.gal-item:nth-child(3n+2) .gal-img{aspect-ratio:4/5;}
+.gal-item:nth-child(5n+4) .gal-img{aspect-ratio:16/9;}
+.gal-item:hover .gal-img{transform:scale(1.06);}
+.gal-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(6,14,26,0.92) 0%,rgba(6,14,26,0.3) 55%,transparent 100%);
+  opacity:0;transition:opacity 0.35s;display:flex;flex-direction:column;justify-content:flex-end;padding:1.2rem;
+}
+.gal-item:hover .gal-overlay{opacity:1;}
+.gal-title{font-weight:700;color:#fff;font-size:0.95rem;margin:0 0 0.3rem;}
+.gal-caption{font-size:0.78rem;color:rgba(255,255,255,0.75);margin:0;}
+.gal-zoom-icon{
+  position:absolute;top:12px;right:12px;
+  width:34px;height:34px;border-radius:8px;
+  background:rgba(37,99,235,0.75);display:grid;place-items:center;
+  color:#fff;font-size:0.9rem;opacity:0;transition:opacity 0.3s;
+}
+.gal-item:hover .gal-zoom-icon{opacity:1;}
+
+/* ── Lightbox ── */
+#gal-lightbox{
+  position:fixed;inset:0;z-index:9999;background:rgba(6,14,26,0.96);
+  display:none;align-items:center;justify-content:center;
+  padding:1.5rem;backdrop-filter:blur(8px);
+}
+#gal-lightbox.open{display:flex;}
+.lb-inner{max-width:860px;width:100%;position:relative;}
+#lb-img{width:100%;border-radius:14px;max-height:76vh;object-fit:contain;display:block;}
+.lb-info{padding:1rem 0 0;}
+.lb-title{font-weight:700;font-size:1.1rem;color:#fff;}
+.lb-caption{color:var(--text-muted);font-size:0.88rem;margin-top:0.25rem;}
+.lb-close{
+  position:absolute;top:-14px;right:-14px;
+  width:36px;height:36px;border-radius:50%;background:var(--navy-mid);border:1px solid var(--border);
+  color:#fff;font-size:1.3rem;line-height:1;cursor:pointer;display:grid;place-items:center;
+  transition:background 0.2s;
+}
+.lb-close:hover{background:var(--teal);}
+.lb-arrows{display:flex;gap:0.75rem;margin-top:0.75rem;}
+.lb-arrow{padding:0.4rem 1rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:#fff;cursor:pointer;font-size:0.9rem;transition:all 0.2s;}
+.lb-arrow:hover{background:rgba(37,99,235,0.25);border-color:var(--teal);}
+</style>
+
+<div class="gal-hero">
+  <div class="g-orb g-orb-1"></div>
+  <div class="g-orb g-orb-2"></div>
+  <div class="container text-center reveal">
+    <p class="section-subtitle">Photo Gallery</p>
+    <h1 class="section-title">A closer look at our work.</h1>
+    <p class="hero-copy mx-auto" style="max-width:680px;">Browse selected photos from product launches, events, team highlights, and our day-to-day culture.</p>
+  </div>
 </div>
+
+<div class="container pb-5">
+
+  <div class="filter-strip reveal">
+    <button class="filter-btn active" data-filter="all">All Photos</button>
+    <button class="filter-btn" data-filter="launch">Launches</button>
+    <button class="filter-btn" data-filter="team">Team</button>
+    <button class="filter-btn" data-filter="event">Events</button>
+    <button class="filter-btn" data-filter="office">Office</button>
+  </div>
+
+  {% if not photos %}
+    {% set photos = [
+      {'image_url':'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=900&q=80','title':'Product Launch Night','caption':'Unveiling our newest release to a packed room of early adopters.','cat':'launch'},
+      {'image_url':'https://images.unsplash.com/photo-1511578314322-379afb476865?w=900&q=80','title':'Team Offsite — Coastal Retreat','caption':'Strategy sessions and team bonding by the coast.','cat':'team'},
+      {'image_url':'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=900&q=80','title':'Annual Conference Keynote','caption':'Sharing our product roadmap on the main stage to 1,200 attendees.','cat':'event'},
+      {'image_url':'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=900&q=80','title':'Office Culture','caption':'A glimpse into our open, collaborative day-to-day workspace.','cat':'office'},
+      {'image_url':'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=900&q=80','title':'Client Workshop','caption':'Collaborating with enterprise partners on next-generation workflows.','cat':'event'},
+      {'image_url':'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=900&q=80','title':'Behind the Scenes','caption':'Our crew prepping for the big event — every detail counts.','cat':'team'},
+      {'image_url':'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=900&q=80','title':'Hackathon 2024','caption':'48 hours of building, debugging, and creative problem-solving.','cat':'event'},
+      {'image_url':'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=900&q=80','title':'Community Meetup','caption':'Connecting with our developer community over ideas and demos.','cat':'event'},
+      {'image_url':'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=900&q=80','title':'Award Ceremony','caption':'Proud to receive the Best SaaS Innovation Award at TechForward 2024.','cat':'launch'}
+    ] %}
+  {% endif %}
+
+  <div class="gallery-masonry" id="gal-masonry">
+    {% for photo in photos %}
+    {% set cat = photo.cat if photo.cat is defined else 'event' %}
+    <div class="gal-item" data-cat="{{ cat }}" data-idx="{{ loop.index0 }}"
+         data-img="{{ photo.image_url }}" data-title="{{ photo.title }}" data-cap="{{ photo.caption }}">
+      <img class="gal-img" src="{{ photo.image_url }}" alt="{{ photo.title }}" loading="lazy">
+      <div class="gal-overlay">
+        <div class="gal-title">{{ photo.title }}</div>
+        <div class="gal-caption">{{ photo.caption }}</div>
+      </div>
+      <div class="gal-zoom-icon">⤢</div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<!-- Lightbox -->
+<div id="gal-lightbox" role="dialog" aria-modal="true">
+  <div class="lb-inner">
+    <button class="lb-close" id="lb-close" aria-label="Close">×</button>
+    <img id="lb-img" src="" alt="">
+    <div class="lb-info">
+      <div class="lb-title" id="lb-title"></div>
+      <div class="lb-caption" id="lb-cap"></div>
+    </div>
+    <div class="lb-arrows">
+      <button class="lb-arrow" id="lb-prev">← Prev</button>
+      <button class="lb-arrow" id="lb-next">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* scroll reveals */
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});
+  },{threshold:0.08});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  /* stagger gallery items */
+  const items = Array.from(document.querySelectorAll('.gal-item'));
+  const galIO = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');galIO.unobserve(e.target);}});
+  },{threshold:0.08});
+  items.forEach((el,i)=>{el.style.transitionDelay=(i%4*0.08)+'s'; galIO.observe(el);});
+
+  /* filter */
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const f=btn.dataset.filter;
+      items.forEach(item=>{
+        const show = f==='all'||item.dataset.cat===f;
+        item.style.transition='opacity 0.3s,transform 0.3s';
+        item.style.opacity=show?'1':'0.15';
+        item.style.transform=show?'':'scale(0.92)';
+        item.style.pointerEvents=show?'':'none';
+      });
+    });
+  });
+
+  /* lightbox */
+  const lb = document.getElementById('gal-lightbox');
+  const lbImg = document.getElementById('lb-img');
+  const lbTitle = document.getElementById('lb-title');
+  const lbCap = document.getElementById('lb-cap');
+  let curIdx = 0;
+  let visibleItems = ()=>items.filter(it=>it.style.pointerEvents!=='none'&&it.style.opacity!=='0.15');
+
+  function openLB(idx){
+    const vi = visibleItems();
+    const item = vi[idx] || items[idx];
+    if(!item) return;
+    curIdx = idx;
+    lbImg.src = item.dataset.img;
+    lbTitle.textContent = item.dataset.title;
+    lbCap.textContent = item.dataset.cap;
+    lb.classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function closeLB(){lb.classList.remove('open');document.body.style.overflow='';}
+
+  items.forEach((item,i)=>item.addEventListener('click',()=>openLB(i)));
+  document.getElementById('lb-close').addEventListener('click',closeLB);
+  lb.addEventListener('click',e=>{if(e.target===lb)closeLB();});
+
+  document.getElementById('lb-prev').addEventListener('click',()=>{
+    const vi=visibleItems(); const i=vi.findIndex(it=>it===items[curIdx]);
+    if(i>0) openLB(items.indexOf(vi[i-1]));
+  });
+  document.getElementById('lb-next').addEventListener('click',()=>{
+    const vi=visibleItems(); const i=vi.findIndex(it=>it===items[curIdx]);
+    if(i<vi.length-1) openLB(items.indexOf(vi[i+1]));
+  });
+  document.addEventListener('keydown',e=>{
+    if(!lb.classList.contains('open'))return;
+    if(e.key==='Escape')closeLB();
+    if(e.key==='ArrowLeft')document.getElementById('lb-prev').click();
+    if(e.key==='ArrowRight')document.getElementById('lb-next').click();
+  });
+})();
+</script>
 {% endblock %}

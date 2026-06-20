@@ -14,19 +14,19 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         :root {
-            --navy:       #0d1b2a;
-            --navy-mid:   #1b2e45;
-            --navy-light: #243d56;
-            --teal:       #0ea5a0;
-            --teal-light: #19c5bf;
+            --navy:       #060e1a;
+            --navy-mid:   #0d1f3c;
+            --navy-light: #122848;
+            --teal:       #2563eb;
+            --teal-light: #3b82f6;
             --amber:      #f59e0b;
             --amber-dark: #d97706;
             --coral:      #ef4444;
             --success:    #10b981;
-            --text-main:  #e2eaf4;
-            --text-muted: #8fa8c4;
-            --border:     rgba(255,255,255,0.07);
-            --card-bg:    rgba(27,46,69,0.7);
+            --text-main:  #e4ecf7;
+            --text-muted: #7a9bc4;
+            --border:     rgba(255,255,255,0.08);
+            --card-bg:    rgba(13,31,60,0.75);
             --glass:      rgba(255,255,255,0.04);
         }
 
@@ -40,8 +40,9 @@
             display: flex;
             flex-direction: column;
             background-image:
-                radial-gradient(ellipse 80% 60% at 70% -20%, rgba(14,165,160,0.12) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 50% at -10% 80%, rgba(245,158,11,0.07) 0%, transparent 55%);
+                radial-gradient(ellipse 80% 60% at 70% -20%, rgba(37,99,235,0.13) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at -10% 80%, rgba(59,130,246,0.08) 0%, transparent 55%),
+                radial-gradient(ellipse 40% 40% at 50% 110%, rgba(37,99,235,0.05) 0%, transparent 60%);
         }
 
         /* ── NAVBAR ── */
@@ -395,8 +396,28 @@
     <nav class="navbar-custom">
         <div class="container d-flex align-items-center justify-content-between">
             <a class="navbar-brand" href="/">
-                <div class="brand-dot"></div>
-                {{ site_name }}
+                <svg viewBox="0 0 52 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:30px;flex-shrink:0;">
+                    <defs>
+                        <linearGradient id="lg1" x1="0" y1="0" x2="52" y2="44" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#1d4ed8"/>
+                            <stop offset="100%" stop-color="#60a5fa"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- A strokes -->
+                    <path d="M5 38 L18 6 L31 38" stroke="url(#lg1)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <line x1="10" y1="26" x2="26" y2="26" stroke="url(#lg1)" stroke-width="3.5" stroke-linecap="round"/>
+                    <!-- i stem -->
+                    <line x1="42" y1="18" x2="42" y2="38" stroke="url(#lg1)" stroke-width="4" stroke-linecap="round"/>
+                    <!-- i dot -->
+                    <circle cx="42" cy="10" r="3.5" fill="#60a5fa"/>
+                    <!-- pixel scatter -->
+                    <rect x="0"  y="14" width="3" height="3" fill="#3b82f6" opacity="0.55" rx="0.5"/>
+                    <rect x="0"  y="21" width="3" height="3" fill="#2563eb" opacity="0.70" rx="0.5"/>
+                    <rect x="4"  y="17" width="2.5" height="2.5" fill="#60a5fa" opacity="0.45" rx="0.5"/>
+                    <rect x="0"  y="28" width="2"   height="2"   fill="#3b82f6" opacity="0.35" rx="0.5"/>
+                    <rect x="4"  y="24" width="2"   height="2"   fill="#2563eb" opacity="0.30" rx="0.5"/>
+                </svg>
+                <span>AI-Solutions</span>
             </a>
 
             <!-- Mobile hamburger -->
