@@ -29,14 +29,14 @@ def write_env(env_path, values):
     lines = [f"{k}={v}\n" for k, v in values.items()]
     with open(env_path, 'w', encoding='utf-8') as f:
         f.writelines(lines)
-    print(f"✅ Wrote environment file: {env_path}")
+    print(f"Wrote environment file: {env_path}")
 
 
 def try_connect(values):
     try:
         import oracledb
     except Exception as e:
-        print(f"⚠️  Cannot import oracledb: {e}")
+        print(f"Cannot import oracledb: {e}")
         print("Install requirements: pip install -r requirements.txt")
         return False
 
@@ -50,10 +50,10 @@ def try_connect(values):
             service_name=values['ORACLE_SERVICE']
         )
         conn.close()
-        print("✅ Successfully connected to Oracle using provided settings.")
+        print("Successfully connected to Oracle using provided settings.")
         return True
     except Exception as e:
-        print(f"❌ Failed to connect to Oracle: {e}")
+        print(f"Failed to connect to Oracle: {e}")
         return False
 
 

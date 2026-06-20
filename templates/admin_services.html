@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Services - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="max-width:1320px; padding-top:2rem;">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--teal); margin-bottom:0.2rem;">Service Portfolio</p>
+            <h1 class="section-title" style="font-size:1.9rem; margin:0;">Manage Services</h1>
+        </div>
+        <a href="/admin/service/new" class="btn-teal">New Service</a>
+    </div>
+
+    <div class="card-hd">
+        <div style="overflow-x:auto;">
+            <table class="table-hd">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Icon</th>
+                        <th>Active</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if services %}
+                        {% for item in services %}
+                        <tr>
+                            <td>#{{ item.id }}</td>
+                            <td>{{ item.title }}</td>
+                            <td>{{ item.description[:100] }}{% if item.description|length > 100 %}…{% endif %}</td>
+                            <td>{{ item.icon or '—' }}</td>
+                            <td>{{ 'Yes' if item.active else 'No' }}</td>
+                            <td><a href="/admin/service/{{ item.id }}/edit" class="btn-teal btn-sm">Edit</a></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No services found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

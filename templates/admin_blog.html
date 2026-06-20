@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Blog - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="max-width:1320px; padding-top:2rem;">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--teal); margin-bottom:0.2rem;">Blog</p>
+            <h1 class="section-title" style="font-size:1.9rem; margin:0;">Manage Blog Posts</h1>
+        </div>
+        <a href="/admin/blog/new" class="btn-teal">New Post</a>
+    </div>
+    <div class="card-hd">
+        <div style="overflow-x:auto;">
+            <table class="table-hd">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Excerpt</th>
+                        <th>Date</th>
+                        <th>Active</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if posts %}
+                        {% for post in posts %}
+                        <tr>
+                            <td>#{{ post.id }}</td>
+                            <td>{{ post.title }}</td>
+                            <td>{{ post.excerpt[:120] }}{% if post.excerpt|length > 120 %}…{% endif %}</td>
+                            <td>{{ post.published_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ 'Yes' if post.active else 'No' }}</td>
+                            <td><a href="/admin/blog/{{ post.id }}/edit" class="btn-teal btn-sm">Edit</a></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No blog posts found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

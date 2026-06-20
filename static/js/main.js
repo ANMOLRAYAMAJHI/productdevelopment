@@ -157,6 +157,13 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
         method,
         headers: { 'Content-Type': 'application/json' },
     };
+
+    const csrfToken = getCsrfToken();
+    if (csrfToken && method !== 'GET' && method !== 'HEAD') {
+        options.headers['X-CSRFToken'] = csrfToken;
+        options.headers['X-CSRF-Token'] = csrfToken;
+    }
+
     if (data) options.body = JSON.stringify(data);
 
     try {
@@ -239,6 +246,45 @@ if (ticketForm) {
             // ensure overlay is hidden when done
             promise.finally(() => { if (overlay) overlay.style.display = 'none'; });
             withButtonLoading(btn, promise);
+        }
+    });
+}
+
+const assistantForm = document.getElementById('assistant-form');
+if (assistantForm) {
+    const messageContainer = document.getElementById('assistant-messages');
+    const textarea = assistantForm.querySelector('[name="question"]');
+
+    function addAssistantMessage(role, text) {
+        const message = document.createElement('div');
+        message.className = `chat-message chat-message-${role}`;
+        message.textContent = text;
+        messageContainer.appendChild(message);
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+
+    assistantForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const question = textarea.value.trim();
+        if (!question) return;
+
+        addAssistantMessage('user', question);
+        textarea.value = '';
+        addAssistantMessage('bot', 'Thinking...');
+
+        try {
+            const response = await apiRequest('/assistant/query', 'POST', { question });
+            const botMessages = messageContainer.querySelectorAll('.chat-message-bot');
+            if (botMessages.length) {
+                botMessages[botMessages.length - 1].textContent = response.answer;
+            } else {
+                addAssistantMessage('bot', response.answer);
+            }
+        } catch (err) {
+            const botMessages = messageContainer.querySelectorAll('.chat-message-bot');
+            if (botMessages.length) {
+                botMessages[botMessages.length - 1].textContent = 'Sorry, I could not process that question right now.';
+            }
         }
     });
 }

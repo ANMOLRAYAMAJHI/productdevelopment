@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Events - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="max-width:1320px; padding-top:2rem;">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--teal); margin-bottom:0.2rem;">Events Timeline</p>
+            <h1 class="section-title" style="font-size:1.9rem; margin:0;">Manage Timeline Events</h1>
+        </div>
+        <a href="/admin/event/new" class="btn-teal">New Event</a>
+    </div>
+    <div class="card-hd">
+        <div style="overflow-x:auto;">
+            <table class="table-hd">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Active</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if timeline %}
+                        {% for item in timeline %}
+                        <tr>
+                            <td>#{{ item.id }}</td>
+                            <td>{{ item.event_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ item.title }}</td>
+                            <td>{{ item.description[:120] }}{% if item.description|length > 120 %}…{% endif %}</td>
+                            <td>{{ 'Yes' if item.active else 'No' }}</td>
+                            <td><a href="/admin/event/{{ item.id }}/edit" class="btn-teal btn-sm">Edit</a></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No timeline events found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

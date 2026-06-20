@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Contact Messages - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="max-width:1320px; padding-top:2rem;">
+    <div class="mb-4">
+        <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--teal); margin-bottom:0.2rem;">Contact Messages</p>
+        <h1 class="section-title" style="font-size:1.9rem; margin:0;">Manage Inquiries</h1>
+    </div>
+    <div class="card-hd">
+        <div style="overflow-x:auto;">
+            <table class="table-hd">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Subject</th>
+                        <th>Message</th>
+                        <th>Read</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if messages %}
+                        {% for msg in messages %}
+                        <tr>
+                            <td>#{{ msg.id }}</td>
+                            <td>{{ msg.name }}</td>
+                            <td>{{ msg.email }}</td>
+                            <td>{{ msg.subject }}</td>
+                            <td>{{ msg.message[:120] }}{% if msg.message|length > 120 %}…{% endif %}</td>
+                            <td>{{ 'Yes' if msg.is_read else 'No' }}</td>
+                            <td>{{ msg.created_date.strftime('%Y-%m-%d') }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No contact messages found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

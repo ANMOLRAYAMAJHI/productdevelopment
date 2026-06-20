@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Gallery - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <p class="section-subtitle">Photo Gallery</p>
+        <h1 class="section-title">A closer look at our work.</h1>
+        <p class="hero-copy mx-auto" style="max-width:720px;">Browse selected gallery photos from product launches, events, and team highlights.</p>
+    </div>
+
+    {% if not photos %}
+        {% set photos = [
+            {
+                'image_url': 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+                'title': 'Product Launch Night',
+                'caption': 'Unveiling our newest release to a packed room.'
+            },
+            {
+                'image_url': 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80',
+                'title': 'Team Offsite',
+                'caption': 'Strategy sessions and team bonding by the coast.'
+            },
+            {
+                'image_url': 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80',
+                'title': 'Conference Keynote',
+                'caption': 'Sharing our roadmap on the main stage.'
+            },
+            {
+                'image_url': 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&q=80',
+                'title': 'Office Culture',
+                'caption': 'A glimpse into our day-to-day workspace.'
+            },
+            {
+                'image_url': 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80',
+                'title': 'Client Workshop',
+                'caption': 'Collaborating with partners on new ideas.'
+            },
+            {
+                'image_url': 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80',
+                'title': 'Behind the Scenes',
+                'caption': 'Our crew prepping for the big event.'
+            }
+        ] %}
+    {% endif %}
+
+    <div class="gallery-grid">
+        {% if photos %}
+            {% for photo in photos %}
+            <div class="gallery-card">
+                <div class="gallery-image" style="background-image:url('{{ photo.image_url }}');"></div>
+                <div class="gallery-body">
+                    <h2>{{ photo.title }}</h2>
+                    <p>{{ photo.caption }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="card-hd text-center" style="padding:3rem; width:100%;">
+                <p style="margin:0; color:var(--text-muted);">Photo gallery content will appear here once uploaded.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

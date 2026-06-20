@@ -44,6 +44,95 @@
         </div>
     </div>
 
+    <!-- Admin Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card c-teal">
+                <div class="stat-label">Services</div>
+                <div class="stat-value">{{ total_services }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card c-success">
+                <div class="stat-label">Blog Posts</div>
+                <div class="stat-value">{{ total_posts }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card c-amber">
+                <div class="stat-label">Events</div>
+                <div class="stat-value">{{ total_events }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card c-coral">
+                <div class="stat-label">Gallery Items</div>
+                <div class="stat-value">{{ total_photos }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card c-success">
+                <div class="stat-label">Feedback</div>
+                <div class="stat-value">{{ total_feedback }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card c-coral">
+                <div class="stat-label">Unread Messages</div>
+                <div class="stat-value">{{ unread_messages }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Quick Actions -->
+    <div class="card-hd mb-4">
+        <div class="card-header-hd">
+            <h2 class="section-title" style="font-size:1.3rem; margin:0;">Quick Admin Actions</h2>
+        </div>
+        <div class="card-body-hd">
+            <div class="row g-3">
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="/admin/services" class="btn-teal w-100">Manage Services</a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="/admin/blog" class="btn-teal w-100">Manage Blog</a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="/admin/events" class="btn-teal w-100">Manage Events</a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="/admin/gallery" class="btn-teal w-100">Manage Gallery</a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="/admin/feedback" class="btn-teal w-100">View Feedback</a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="/admin/contact-messages" class="btn-teal w-100">Contact Messages</a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="/admin/settings" class="btn-teal w-100">Site Settings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="card-hd mb-4">
+
+        <div class="col-6 col-lg-3">
+            <div class="stat-card c-amber">
+                <div class="stat-label">In Progress</div>
+                <div class="stat-value" id="in-progress-tickets">—</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card c-coral">
+                <div class="stat-label">Urgent</div>
+                <div class="stat-value" id="urgent-tickets">—</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Search & Filter -->
     <div class="card-hd mb-4">
         <div class="card-body-hd">

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Feedback - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <p class="section-subtitle">Customer Feedback</p>
+        <h1 class="section-title">What customers are saying.</h1>
+        <p class="hero-copy mx-auto" style="max-width:720px;">Read testimonials, ratings, and support success stories from customers who rely on our AI-powered helpdesk and service portfolio.</p>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card c-teal">
+                <div class="stat-label">Average Rating</div>
+                <div class="stat-value">{{ average_rating }} / 5</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card c-amber">
+                <div class="stat-label">Total Reviews</div>
+                <div class="stat-value">{{ total_reviews }}</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card c-success">
+                <div class="stat-label">Positive Feedback</div>
+                <div class="stat-value">{{ positive_ratio }}%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="col-md-6 col-xl-4">
+                <div class="card-hd h-100 review-card">
+                    <div class="card-body-hd">
+                        <div class="d-flex align-items-center justify-content-between mb-3 gap-2 flex-wrap">
+                            <div>
+                                <h3 class="review-name">{{ review.name }}</h3>
+                                {% if review.role %}
+                                <div class="review-role">{{ review.role }}</div>
+                                {% endif %}
+                            </div>
+                            <span class="badge-hd badge-closed">{{ review.rating }} / 5</span>
+                        </div>
+                        <p class="review-text">{{ review.message }}</p>
+                        <div class="review-date">{{ review.created_date.strftime('%b %d, %Y') }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="card-hd text-center" style="padding:3rem;">
+                    <p style="margin:0; color:var(--text-muted);">No feedback has been published yet.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

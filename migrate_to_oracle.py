@@ -19,7 +19,7 @@ def backup_sqlite():
             data = f.read()
         with open(backup_path, 'wb') as f:
             f.write(data)
-        print(f"✅ SQLite backup created: {backup_path}")
+        print(f"SQLite backup created: {backup_path}")
         return True
     return False
 
@@ -28,7 +28,7 @@ def migrate_data():
     sqlite_path = 'database/helpdesk.db'
     
     if not os.path.exists(sqlite_path):
-        print("❌ SQLite database not found. No data to migrate.")
+        print("SQLite database not found. No data to migrate.")
         return False
     
     try:
@@ -57,7 +57,7 @@ def migrate_data():
                     db.session.add(admin)
                     migrated_admins += 1
                 except Exception as e:
-                    print(f"⚠️  Error migrating admin {admin_row['username']}: {e}")
+                    print(f"Error migrating admin {admin_row['username']}: {e}")
             
             # Migrate Ticket data
             sqlite_cursor.execute("SELECT * FROM ticket")
@@ -82,19 +82,19 @@ def migrate_data():
                     db.session.add(ticket)
                     migrated_tickets += 1
                 except Exception as e:
-                    print(f"⚠️  Error migrating ticket {ticket_row['customer_name']}: {e}")
+                    print(f"Error migrating ticket {ticket_row['customer_name']}: {e}")
             
             # Commit all changes
             db.session.commit()
             sqlite_conn.close()
             
-            print(f"\n✅ Migration completed successfully!")
+            print(f"\nMigration completed successfully!")
             print(f"   - Admins migrated: {migrated_admins}")
             print(f"   - Tickets migrated: {migrated_tickets}")
             return True
             
     except Exception as e:
-        print(f"❌ Migration failed: {e}")
+        print(f"Migration failed: {e}")
         return False
 
 def main():
@@ -109,10 +109,10 @@ def main():
     # Step 2: Migrate data
     print("\n2️⃣  Migrating data to Oracle...")
     if migrate_data():
-        print("\n✅ All systems ready! Your Oracle database is now synced.")
+        print("\nAll systems ready! Your Oracle database is now synced.")
         print("   Run 'python app.py' to start the Flask app with Oracle backend.")
     else:
-        print("\n⚠️  Migration encountered issues. Please check the errors above.")
+        print("\nMigration encountered issues. Please check the errors above.")
 
 if __name__ == '__main__':
     main()

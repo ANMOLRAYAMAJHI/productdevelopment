@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Virtual Assistant - AI Customer Helpdesk{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card-hd p-4">
+                <h1 class="section-title">Virtual Assistant</h1>
+                <p class="hero-copy">This AI-powered assistant helps guide customers through ticket submission, status checks, and product support options. It's a lightweight entry point for conversational help.</p>
+                <div class="mt-4">
+                    <a href="/submit" class="btn-teal">Submit a Ticket</a>
+                    <a href="/contact" class="btn-ghost">Contact Support</a>
+                </div>
+                <div class="mt-5">
+                    <form id="assistant-form" class="assistant-chat-form">
+                        <label for="assistant-question" class="form-label-hd">Ask the assistant</label>
+                        <textarea id="assistant-question" name="question" class="form-control-hd" rows="4" placeholder="Type your question here…" maxlength="2000" required></textarea>
+                        <div class="mt-3">
+                            <button type="submit" class="btn-teal" id="assistant-submit-btn">Ask the assistant</button>
+                        </div>
+                    </form>
+                    <div id="assistant-error" class="text-danger mt-3" hidden></div>
+                    <div id="assistant-messages" class="assistant-messages mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.assistant-messages .qa-pair {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color, #e2e2e2);
+}
+
+.assistant-messages .qa-pair:last-child {
+    border-bottom: none;
+}
+
+.assistant-messages .qa-question {
+    font-weight: 700;
+    color: var(--text-main, #1a1a1a);
+    margin-bottom: 0.5rem;
+}
+
+.assistant-messages .qa-answer {
+    color: var(--text-muted, #555);
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+</style>
+
+<script>
+(function () {
+    const form = document.getElementById('assistant-form');
+    const textarea = document.getElementById('assistant-question');
+    const messagesEl = document.getElementById('assistant-messages');
+    const errorEl = document.getElementById('assistant-error');
+    const submitBtn = document.getElementById('assistant-submit-btn');
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const question = textarea.value.trim();
+        if (!question) return;
+
+        errorEl.hidden = true;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Thinking…';
+
+        try {
+            const res = await fetch('/assistant/query', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: question })
+            });
+
+            const data = await res.json().catch(function () { return {}; });
+
+            if (!res.ok) {
+                errorEl.textContent = data.error || 'Something went wrong. Please try again.';
+                errorEl.hidden = false;
+            } else {
+                const pair = document.createElement('div');
+                pair.className = 'qa-pair';
+
+                const qEl = document.createElement('div');
+                qEl.className = 'qa-question';
+                qEl.textContent = question;
+
+                const aEl = document.createElement('div');
+                aEl.className = 'qa-answer';
+                aEl.textContent = data.answer || '(No response received.)';
+
+                pair.appendChild(qEl);
+                pair.appendChild(aEl);
+                messagesEl.insertBefore(pair, messagesEl.firstChild);
+
+                textarea.value = '';
+            }
+        } catch (err) {
+            errorEl.textContent = 'Network error — please check your connection and try again.';
+            errorEl.hidden = false;
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Ask the assistant';
+        }
+    });
+})();
+</script>
+{% endblock %}

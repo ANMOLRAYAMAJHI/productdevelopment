@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Services - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <p class="section-subtitle">Our Software Solutions</p>
+        <h1 class="section-title">Solutions built to scale your business.</h1>
+        <p class="hero-copy mx-auto" style="max-width:720px;">From support automation to service portfolios, {{ site_name }} helps teams deliver better customer experiences with clarity and speed.</p>
+    </div>
+
+    <div class="row g-4">
+        {% if services %}
+            {% for service in services %}
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card card-hd h-100">
+                    <div class="service-card-head">
+                        <div class="service-icon">{{ service.icon or '🧩' }}</div>
+                        <h2>{{ service.title }}</h2>
+                    </div>
+                    <p>{{ service.description }}</p>
+                    <div class="service-meta">Available now</div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="card-hd text-center" style="padding:3rem;">
+                    <p style="margin:0; color:var(--text-muted);">No services are available yet. Please check back soon.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

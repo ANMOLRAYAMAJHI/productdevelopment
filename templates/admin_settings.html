@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Settings - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card-hd">
+                <div class="card-header-hd">
+                    <h1 class="section-title" style="font-size:1.8rem; margin:0;">Site Settings</h1>
+                </div>
+                <div class="card-body-hd">
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+                        <div class="mb-4">
+                            {{ form.site_name.label(class='form-label-hd') }}
+                            {{ form.site_name(class='form-control-hd', placeholder='Site name') }}
+                            {% if form.site_name.errors %}<div class="invalid-text">{{ form.site_name.errors[0] }}</div>{% endif %}
+                        </div>
+                        <div class="mb-4">
+                            {{ form.logo_url.label(class='form-label-hd') }}
+                            {{ form.logo_url(class='form-control-hd', placeholder='Logo URL') }}
+                            {% if form.logo_url.errors %}<div class="invalid-text">{{ form.logo_url.errors[0] }}</div>{% endif %}
+                        </div>
+                        <div class="mb-4">
+                            {{ form.timezone.label(class='form-label-hd') }}
+                            {{ form.timezone(class='form-control-hd', placeholder='Timezone (e.g. UTC)') }}
+                            {% if form.timezone.errors %}<div class="invalid-text">{{ form.timezone.errors[0] }}</div>{% endif %}
+                        </div>
+                        <div class="mb-4">
+                            {{ form.contact_email.label(class='form-label-hd') }}
+                            {{ form.contact_email(class='form-control-hd', placeholder='Contact email') }}
+                            {% if form.contact_email.errors %}<div class="invalid-text">{{ form.contact_email.errors[0] }}</div>{% endif %}
+                        </div>
+                        <div class="mb-4">
+                            {{ form.contact_phone.label(class='form-label-hd') }}
+                            {{ form.contact_phone(class='form-control-hd', placeholder='Contact phone') }}
+                            {% if form.contact_phone.errors %}<div class="invalid-text">{{ form.contact_phone.errors[0] }}</div>{% endif %}
+                        </div>
+                        <div class="mb-4">
+                            {{ form.hero_tagline.label(class='form-label-hd') }}
+                            {{ form.hero_tagline(class='form-control-hd', placeholder='Hero section tagline') }}
+                            {% if form.hero_tagline.errors %}<div class="invalid-text">{{ form.hero_tagline.errors[0] }}</div>{% endif %}
+                        </div>
+                        {{ form.submit(class='btn-teal') }}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

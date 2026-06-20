@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Feedback - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="max-width:1320px; padding-top:2rem;">
+    <div class="mb-4">
+        <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--teal); margin-bottom:0.2rem;">Customer Feedback</p>
+        <h1 class="section-title" style="font-size:1.9rem; margin:0;">Manage Ratings & Reviews</h1>
+    </div>
+    <div class="card-hd">
+        <div style="overflow-x:auto;">
+            <table class="table-hd">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Message</th>
+                        <th>Rating</th>
+                        <th>Active</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if feedback %}
+                        {% for item in feedback %}
+                        <tr>
+                            <td>#{{ item.id }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.role or '—' }}</td>
+                            <td>{{ item.message[:110] }}{% if item.message|length > 110 %}…{% endif %}</td>
+                            <td>{{ item.rating }}</td>
+                            <td>{{ 'Yes' if item.active else 'No' }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No feedback found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

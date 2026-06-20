@@ -5,6 +5,7 @@ Automatically syncs data from SQLite to Oracle database
 
 from datetime import datetime
 from config import Config
+from sqlalchemy import create_engine
 
 class OracleSync:
     """Handle syncing data to Oracle database"""
@@ -13,7 +14,18 @@ class OracleSync:
         self.enabled = Config.ORACLE_ENABLED
         self.connection = None
         self.cursor = None
+        self.sqlalchemy_uri = None
+        self.engine = None
     
+    def get_sqlalchemy_uri(self):
+        """Build SQLAlchemy Oracle URI from configuration."""
+        if Config.ORACLE_DB_URI:
+            return Config.ORACLE_DB_URI
+        return (
+            f'oracle+oracledb://{Config.ORACLE_USER}:{Config.ORACLE_PASSWORD}@{Config.ORACLE_HOST}:{Config.ORACLE_PORT}/'
+            f'?service_name={Config.ORACLE_SERVICE}'
+        )
+
     def connect(self):
         """Establish connection to Oracle database"""
         if not self.enabled:
@@ -40,11 +52,26 @@ class OracleSync:
                 service_name=Config.ORACLE_SERVICE
             )
             self.cursor = self.connection.cursor()
-            print("✅ Connected to Oracle database for sync")
+            self.sqlalchemy_uri = self.get_sqlalchemy_uri()
+            self.engine = create_engine(self.sqlalchemy_uri)
+            print("Connected to Oracle database for sync")
             return True
         except Exception as e:
-            print(f"⚠️  Oracle sync unavailable: {e}")
+            print(f"Oracle sync unavailable: {e}")
             self.enabled = False
+            return False
+
+    def ensure_schema(self):
+        """Create Oracle tables if they do not already exist."""
+        if not self.enabled or not self.engine:
+            return False
+        try:
+            from models import db
+            db.metadata.create_all(self.engine)
+            print("Oracle schema verified/created")
+            return True
+        except Exception as e:
+            print(f"Failed to create Oracle schema: {e}")
             return False
     
     def sync_admin(self, admin_id, username, password_hash):
@@ -137,4 +164,5 @@ oracle_sync = OracleSync()
 def init_oracle_sync(app=None):
     """Initialize Oracle sync on app startup"""
     if app:
-        oracle_sync.connect()
+        if oracle_sync.connect():
+            oracle_sync.ensure_schema()

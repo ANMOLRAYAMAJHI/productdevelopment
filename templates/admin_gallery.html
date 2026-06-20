@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Gallery - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="max-width:1320px; padding-top:2rem;">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <p style="font-size:0.76rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--teal); margin-bottom:0.2rem;">Photo Gallery</p>
+            <h1 class="section-title" style="font-size:1.9rem; margin:0;">Manage Gallery Items</h1>
+        </div>
+        <a href="/admin/gallery/new" class="btn-teal">New Photo</a>
+    </div>
+    <div class="card-hd">
+        <div style="overflow-x:auto;">
+            <table class="table-hd">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Caption</th>
+                        <th>Image</th>
+                        <th>Active</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if photos %}
+                        {% for photo in photos %}
+                        <tr>
+                            <td>#{{ photo.id }}</td>
+                            <td>{{ photo.title }}</td>
+                            <td>{{ photo.caption[:100] }}{% if photo.caption|length > 100 %}…{% endif %}</td>
+                            <td>{{ photo.image_url[:40] }}{% if photo.image_url|length > 40 %}…{% endif %}</td>
+                            <td>{{ 'Yes' if photo.active else 'No' }}</td>
+                            <td><a href="/admin/gallery/{{ photo.id }}/edit" class="btn-teal btn-sm">Edit</a></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No gallery items found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

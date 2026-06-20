@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }} - Admin - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card-hd">
+                <div class="card-header-hd">
+                    <h1 class="section-title" style="font-size:1.8rem; margin:0;">{{ page_title }}</h1>
+                </div>
+                <div class="card-body-hd">
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+                        <div class="mb-4">
+                            {{ form.title.label(class='form-label-hd') }}
+                            {{ form.title(class='form-control-hd', placeholder='Service title') }}
+                            {% if form.title.errors %}<div class="invalid-text">{{ form.title.errors[0] }}</div>{% endif %}
+                        </div>
+                        <div class="mb-4">
+                            {{ form.description.label(class='form-label-hd') }}
+                            {{ form.description(class='form-control-hd', rows=5, placeholder='Describe the service') }}
+                            {% if form.description.errors %}<div class="invalid-text">{{ form.description.errors[0] }}</div>{% endif %}
+                        </div>
+                        <div class="mb-4">
+                            {{ form.icon.label(class='form-label-hd') }}
+                            {{ form.icon(class='form-control-hd', placeholder='Emoji or icon name') }}
+                            {% if form.icon.errors %}<div class="invalid-text">{{ form.icon.errors[0] }}</div>{% endif %}
+                        </div>
+                        {{ form.submit(class='btn-teal') }}
+                        <a href="/admin/services" class="btn-ghost">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

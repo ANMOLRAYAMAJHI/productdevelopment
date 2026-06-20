@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Events - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;">
+    <div class="text-center mb-5">
+        <p style="font-size:0.75rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); margin-bottom:0.6rem;">Events Timeline</p>
+        <h1 class="section-title" style="font-size:2.5rem;">Our journey in milestones.</h1>
+        <p style="color:var(--text-muted); max-width:680px; margin:1rem auto;">Review key updates, launches, and achievements as we grow.</p>
+    </div>
+
+    {% if not timeline %}
+        {% set timeline = [
+            {
+                'event_date_str': 'Jan 15, 2024',
+                'title': 'Company Founded',
+                'description': 'We officially launched with a small team and a big vision for the industry.'
+            },
+            {
+                'event_date_str': 'Apr 02, 2024',
+                'title': 'First Product Release',
+                'description': 'Shipped our first product to early customers and gathered valuable feedback.'
+            },
+            {
+                'event_date_str': 'Aug 20, 2024',
+                'title': 'Series A Funding',
+                'description': 'Secured funding to accelerate growth and expand our core team.'
+            },
+            {
+                'event_date_str': 'Nov 11, 2024',
+                'title': '10,000 Users Milestone',
+                'description': 'Crossed ten thousand active users, a major validation of our direction.'
+            },
+            {
+                'event_date_str': 'Mar 05, 2025',
+                'title': 'New Office Opening',
+                'description': 'Opened our new headquarters to support a growing, distributed team.'
+            }
+        ] %}
+    {% endif %}
+
+    <div class="card-hd" style="padding:2rem;">
+        {% if timeline %}
+            <div class="timeline-list">
+                {% for item in timeline %}
+                <div class="timeline-item" style="margin-bottom:2rem;">
+                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:0.75rem;">
+                        <div style="width:14px; height:14px; border-radius:50%; background:var(--teal);"></div>
+                        <div style="font-size:0.95rem; font-weight:700; color:var(--text-main);">
+                            {% if item.event_date %}{{ item.event_date.strftime('%b %d, %Y') }}{% else %}{{ item.event_date_str }}{% endif %}
+                        </div>
+                    </div>
+                    <h2 style="font-size:1.2rem; margin-bottom:0.6rem;">{{ item.title }}</h2>
+                    <p style="color:var(--text-muted); line-height:1.75;">{{ item.description }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center" style="padding:3rem 0; color:var(--text-muted);">No events are available yet.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

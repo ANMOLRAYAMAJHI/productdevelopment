@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <section class="about-hero mb-5">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-6">
+                <div class="card-hd p-4">
+                    <span class="section-subtitle">About Us</span>
+                    <h1 class="section-title">We build better support with AI, insight, and real workflow control.</h1>
+                    <p class="about-copy mt-4">{{ site_name }} combines intelligent ticket triage, sentiment analysis, and admin operations in a single, easy-to-use platform. Our mission is to make customer support faster, more transparent, and more effective for growing teams.</p>
+                    <ul class="about-list mt-4">
+                        <li><strong>AI-driven prioritization</strong> for faster response to urgent requests.</li>
+                        <li><strong>Unified management</strong> for services, events, blogs, and customer contacts.</li>
+                        <li><strong>Secure, responsive design</strong> for desktop and mobile users.</li>
+                    </ul>
+                    <div class="d-flex flex-wrap gap-3 mt-4">
+                        <a href="/contact" class="btn-ghost">Contact Us</a>
+                        <a href="/services" class="btn-teal">View Services</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="about-box-grid">
+                    <div class="about-box about-box--accent">
+                        <h3>Virtual Assistant</h3>
+                        <p>Conversational guidance for submitting tickets and finding support quickly.</p>
+                    </div>
+                    <div class="about-box">
+                        <h3>Service Portfolio</h3>
+                        <p>Clear presentation of software solutions and service offerings.</p>
+                    </div>
+                    <div class="about-box">
+                        <h3>Events Timeline</h3>
+                        <p>Track milestones, launches, and announcements with a visual timeline.</p>
+                    </div>
+                    <div class="about-box">
+                        <h3>Feedback Hub</h3>
+                        <p>Collect and showcase customer reviews, ratings, and testimonials.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-stats py-4">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-card c-teal">
+                    <div class="stat-label">Satisfied customers</div>
+                    <div class="stat-value">98%</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card c-amber">
+                    <div class="stat-label">Fast ticket review</div>
+                    <div class="stat-value">2 min</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card c-success">
+                    <div class="stat-label">Platform uptime</div>
+                    <div class="stat-value">99.9%</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
